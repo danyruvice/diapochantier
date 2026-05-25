@@ -182,9 +182,19 @@ namespace DiaspoChantier.Services
 
         public async Task<Utilisateur?> ObtenirUtilisateurActuelAsync(string identifiantUtilisateur)
         {
-            return await _contexte.Users
-                .Include(u => u.ProfilEntrepreneur)
+            var utilisateur = await _contexte.Users
                 .FirstOrDefaultAsync(u => u.Id == identifiantUtilisateur);
+
+            if (utilisateur?.Role != RoleUtilisateur.Entrepreneur)
+            {
+                return utilisateur;
+            }
+
+            await _contexte.Entry(utilisateur)
+                .Reference(u => u.ProfilEntrepreneur)
+                .LoadAsync();
+
+            return utilisateur;
         }
 
         public async Task<IdentityResult> MettreAJourProfilAsync(Utilisateur utilisateur, GestionProfilViewModel modele, string? urlPhoto = null)
@@ -199,7 +209,7 @@ namespace DiaspoChantier.Services
                 utilisateur.PhotoProfilUrl = urlPhoto;
             }
 
-            if (utilisateur.ProfilEntrepreneur is not null)
+            if (utilisateur.Role == RoleUtilisateur.Entrepreneur && utilisateur.ProfilEntrepreneur is not null)
             {
                 utilisateur.ProfilEntrepreneur.Specialite = modele.Specialite ?? utilisateur.ProfilEntrepreneur.Specialite;
                 utilisateur.ProfilEntrepreneur.Ville = modele.Ville ?? utilisateur.ProfilEntrepreneur.Ville;

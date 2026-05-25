@@ -41,6 +41,7 @@ namespace DiaspoChantier.ViewModels
         [Display(Name = "Numéro MTN MoMo")]
         public string? NumeroMoMo { get; set; }
 
+        public bool IsEntrepreneur { get; set; }
         public string RoleAffiche { get; set; } = string.Empty;
         public string StatutAffiche { get; set; } = string.Empty;
     }

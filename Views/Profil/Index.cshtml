@@ -78,7 +78,7 @@
             </li>
         </ul>
 
-        @if (!string.IsNullOrWhiteSpace(Model.Specialite) || !string.IsNullOrWhiteSpace(Model.Ville))
+        @if (Model.IsEntrepreneur && (!string.IsNullOrWhiteSpace(Model.Specialite) || !string.IsNullOrWhiteSpace(Model.Ville) || !string.IsNullOrWhiteSpace(Model.NumeroMoMo)))
         {
             <div class="profil-divider"></div>
             <div class="profil-section-label">Profil entrepreneur</div>
@@ -104,6 +104,18 @@
                         <div>
                             <div class="profil-info-label">Ville</div>
                             <div class="profil-info-value">@Model.Ville</div>
+                        </div>
+                    </li>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.NumeroMoMo))
+                {
+                    <li>
+                        <span class="profil-info-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h8"/></svg>
+                        </span>
+                        <div>
+                            <div class="profil-info-label">MoMo</div>
+                            <div class="profil-info-value">@Model.NumeroMoMo</div>
                         </div>
                     </li>
                 }
@@ -157,26 +169,29 @@
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <div class="form-section-title">Profil entrepreneur <span class="form-section-opt">(si applicable)</span></div>
-                        <div class="form-row-2">
-                            <div class="form-group">
-                                <label asp-for="Specialite" class="form-label"></label>
-                                <input asp-for="Specialite" class="form-control" placeholder="Maçonnerie, Électricité..." />
-                                <span asp-validation-for="Specialite" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="Ville" class="form-label"></label>
-                                <input asp-for="Ville" class="form-control" placeholder="Douala, Yaoundé..." />
-                                <span asp-validation-for="Ville" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="NumeroMoMo" class="form-label"></label>
-                                <input asp-for="NumeroMoMo" class="form-control" placeholder="6XX XXX XXX" />
-                                <span asp-validation-for="NumeroMoMo" class="text-danger"></span>
+                    @if (Model.IsEntrepreneur)
+                    {
+                        <div class="form-section">
+                            <div class="form-section-title">Profil entrepreneur <span class="form-section-opt">(si applicable)</span></div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label asp-for="Specialite" class="form-label"></label>
+                                    <input asp-for="Specialite" class="form-control" placeholder="Maçonnerie, Électricité..." />
+                                    <span asp-validation-for="Specialite" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Ville" class="form-label"></label>
+                                    <input asp-for="Ville" class="form-control" placeholder="Douala, Yaoundé..." />
+                                    <span asp-validation-for="Ville" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="NumeroMoMo" class="form-label"></label>
+                                    <input asp-for="NumeroMoMo" class="form-control" placeholder="6XX XXX XXX" />
+                                    <span asp-validation-for="NumeroMoMo" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
 
                 <aside class="profil-upload-panel">
