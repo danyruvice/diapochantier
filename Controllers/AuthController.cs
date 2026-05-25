@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using DiaspoChantier.Enums;
 using DiaspoChantier.Models;
 using DiaspoChantier.Services;
@@ -12,26 +11,25 @@ namespace DiaspoChantier.Controllers
     public class AuthController : Controller
     {
         private readonly AuthService _serviceAuthentification;
-        private readonly SignInManager<Utilisateur> _signInManager;
         private readonly UserManager<Utilisateur> _userManager;
 
         public AuthController(
             AuthService serviceAuthentification,
-            SignInManager<Utilisateur> signInManager,
             UserManager<Utilisateur> userManager)
         {
             _serviceAuthentification = serviceAuthentification;
-            _signInManager = signInManager;
             _userManager = userManager;
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Connexion()
         {
             return View("Login", new ConnexionViewModel());
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Connexion(ConnexionViewModel modele)
         {
@@ -41,13 +39,13 @@ namespace DiaspoChantier.Controllers
             }
 
             var resultat = await _serviceAuthentification.ConnexionAsync(modele);
-            if (resultat.Succeeded)
+            if (!resultat.Succeeded)
             {
-                return RedirectToAction("Accueil", "Home");
+                ModelState.AddModelError(string.Empty, "Adresse email ou mot de passe incorrect.");
+                return View("Login", modele);
             }
 
-            ModelState.AddModelError(string.Empty, "Adresse email ou mot de passe incorrect.");
-            return View("Login", modele);
+            return await RedirigerVersTableauDeBordAsync();
         }
 
         [HttpPost("connexion-jwt")]
@@ -75,18 +73,21 @@ namespace DiaspoChantier.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ChoisirTypeCompte()
         {
             return View("RegisterChoice");
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult InscriptionInvestisseur()
         {
             return View("RegisterInvestisseur", new InscriptionInvestisseurViewModel());
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InscriptionInvestisseur(InscriptionInvestisseurViewModel modele)
         {
@@ -107,16 +108,18 @@ namespace DiaspoChantier.Controllers
             }
 
             TempData["MessageReussite"] = "Votre compte investisseur a été créé avec succès.";
-            return RedirectToAction("Accueil", "Home");
+            return await RedirigerVersTableauDeBordAsync();
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult InscriptionEntrepreneur()
         {
             return View("RegisterEntrepreneur", new InscriptionEntrepreneurViewModel());
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> InscriptionEntrepreneur(InscriptionEntrepreneurViewModel modele)
         {
@@ -137,16 +140,18 @@ namespace DiaspoChantier.Controllers
             }
 
             TempData["MessageReussite"] = "Votre compte entrepreneur a bien été créé et votre dossier est en attente de vérification.";
-            return RedirectToAction("Accueil", "Home");
+            return await RedirigerVersTableauDeBordAsync();
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult MotDePasseOublie()
         {
             return View("ForgotPassword", new DemandeResetPasswordViewModel());
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MotDePasseOublie(DemandeResetPasswordViewModel modele)
         {
@@ -167,6 +172,7 @@ namespace DiaspoChantier.Controllers
         }
 
         [HttpGet("reinitialisation-mot-de-passe")]
+        [AllowAnonymous]
         public IActionResult ReinitialisationMotDePasse([FromQuery] string email, [FromQuery] string token)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token))
@@ -183,6 +189,7 @@ namespace DiaspoChantier.Controllers
         }
 
         [HttpPost("reinitialisation-mot-de-passe")]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReinitialisationMotDePasse(ResetPasswordViewModel modele)
         {
@@ -207,21 +214,27 @@ namespace DiaspoChantier.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Deconnexion()
         {
             await _serviceAuthentification.DeconnexionAsync();
             return RedirectToAction("Accueil", "Home");
         }
 
-
-        private string GetUrlRetour(string? returnUrl)
+        private async Task<IActionResult> RedirigerVersTableauDeBordAsync()
         {
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            var utilisateur = await _userManager.GetUserAsync(User);
+            if (utilisateur is null)
             {
-                return returnUrl;
+                return RedirectToAction("Accueil", "Home");
             }
 
-            return Url.Action("Accueil", "Home") ?? "/";
+            if (utilisateur.Role == RoleUtilisateur.Administrateur)
+            {
+                return RedirectToAction("Index", "Admin");
+            }
+
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

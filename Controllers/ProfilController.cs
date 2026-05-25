@@ -1,3 +1,4 @@
+using DiaspoChantier.Enums;
 using DiaspoChantier.Models;
 using DiaspoChantier.Services;
 using DiaspoChantier.ViewModels;
@@ -24,43 +25,40 @@ namespace DiaspoChantier.Controllers
         [HttpGet]
         public async Task<IActionResult> MonProfil()
         {
-            var utilisateur = await _gestionnaireUtilisateurs.GetUserAsync(User);
+            var identifiant = _gestionnaireUtilisateurs.GetUserId(User);
+            if (string.IsNullOrWhiteSpace(identifiant))
+            {
+                return RedirectToAction("Connexion", "Auth");
+            }
+
+            var utilisateur = await _serviceAuthentification.ObtenirUtilisateurActuelAsync(identifiant);
             if (utilisateur is null)
             {
                 return RedirectToAction("Connexion", "Auth");
             }
 
-            var modele = new GestionProfilViewModel
-            {
-                Nom = utilisateur.Nom,
-                Prenom = utilisateur.Prenom,
-                Email = utilisateur.Email ?? string.Empty,
-                Telephone = utilisateur.Telephone,
-                Adresse = utilisateur.Adresse,
-                PhotoProfilUrlActuelle = utilisateur.PhotoProfilUrl,
-                RoleAffiche = utilisateur.Role.ToString(),
-                StatutAffiche = utilisateur.Statut.ToString(),
-                Specialite = utilisateur.ProfilEntrepreneur?.Specialite,
-                Ville = utilisateur.ProfilEntrepreneur?.Ville,
-                NumeroMoMo = utilisateur.ProfilEntrepreneur?.NumeroMoMo
-            };
-
-            return View("Index", modele);
+            return View("Index", ConstruireModeleProfil(utilisateur));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MettreAJourProfil(GestionProfilViewModel modele)
         {
-            if (!ModelState.IsValid)
+            var identifiant = _gestionnaireUtilisateurs.GetUserId(User);
+            if (string.IsNullOrWhiteSpace(identifiant))
             {
-                return View("Index", modele);
+                return RedirectToAction("Connexion", "Auth");
             }
 
-            var utilisateur = await _gestionnaireUtilisateurs.GetUserAsync(User);
+            var utilisateur = await _serviceAuthentification.ObtenirUtilisateurActuelAsync(identifiant);
             if (utilisateur is null)
             {
                 return RedirectToAction("Connexion", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("Index", ConstruireModeleProfil(utilisateur, modele));
             }
 
             string? urlPhoto = utilisateur.PhotoProfilUrl;
@@ -78,11 +76,32 @@ namespace DiaspoChantier.Controllers
                     ModelState.AddModelError(string.Empty, erreur.Description);
                 }
 
-                return View("Index", modele);
+                return View("Index", ConstruireModeleProfil(utilisateur, modele));
             }
 
             TempData["MessageReussite"] = "Votre profil a été mis à jour.";
             return RedirectToAction(nameof(MonProfil));
+        }
+
+        private static GestionProfilViewModel ConstruireModeleProfil(Utilisateur utilisateur, GestionProfilViewModel? source = null)
+        {
+            var isEntrepreneur = utilisateur.Role == RoleUtilisateur.Entrepreneur;
+
+            return new GestionProfilViewModel
+            {
+                Prenom = source?.Prenom ?? utilisateur.Prenom,
+                Nom = source?.Nom ?? utilisateur.Nom,
+                Email = utilisateur.Email ?? string.Empty,
+                Telephone = source?.Telephone ?? utilisateur.Telephone,
+                Adresse = source?.Adresse ?? utilisateur.Adresse,
+                PhotoProfilUrlActuelle = utilisateur.PhotoProfilUrl,
+                IsEntrepreneur = isEntrepreneur,
+                RoleAffiche = utilisateur.Role.ToString(),
+                StatutAffiche = utilisateur.Statut.ToString(),
+                Specialite = isEntrepreneur ? (source?.Specialite ?? utilisateur.ProfilEntrepreneur?.Specialite) : null,
+                Ville = isEntrepreneur ? (source?.Ville ?? utilisateur.ProfilEntrepreneur?.Ville) : null,
+                NumeroMoMo = isEntrepreneur ? (source?.NumeroMoMo ?? utilisateur.ProfilEntrepreneur?.NumeroMoMo) : null
+            };
         }
     }
 }
