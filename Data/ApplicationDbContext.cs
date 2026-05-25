@@ -16,6 +16,8 @@ namespace DiaspoChantier.Data
         public DbSet<Entrepreneur> Entrepreneurs { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<TokenResetPassword> TokensResetPassword { get; set; }
+        public DbSet<Projet> Projets { get; set; }
+        public DbSet<Jalon> Jalons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -57,6 +59,38 @@ namespace DiaspoChantier.Data
                 entity.HasOne(d => d.Entrepreneur)
                       .WithMany(e => e.Documents)
                       .HasForeignKey(d => d.IdEntrepreneur)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Projet>(entity =>
+            {
+                entity.HasKey(p => p.IdProjet);
+                entity.Property(p => p.Titre).HasMaxLength(150).IsRequired();
+                entity.Property(p => p.TypeProjet).HasMaxLength(100).IsRequired();
+                entity.Property(p => p.Localisation).HasMaxLength(200).IsRequired();
+                entity.Property(p => p.BudgetTotal).HasPrecision(18, 2);
+
+                entity.HasOne(p => p.Investisseur)
+                      .WithMany()
+                      .HasForeignKey(p => p.IdInvestisseur)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(p => p.Entrepreneur)
+                      .WithMany()
+                      .HasForeignKey(p => p.IdEntrepreneur)
+                      .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<Jalon>(entity =>
+            {
+                entity.HasKey(j => j.IdJalon);
+                entity.Property(j => j.Titre).HasMaxLength(150).IsRequired();
+                entity.Property(j => j.Description).HasMaxLength(500);
+                entity.Property(j => j.Montant).HasPrecision(18, 2);
+
+                entity.HasOne(j => j.Projet)
+                      .WithMany(p => p.Jalons)
+                      .HasForeignKey(j => j.IdProjet)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 

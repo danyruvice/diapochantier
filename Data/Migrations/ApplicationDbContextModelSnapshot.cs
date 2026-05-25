@@ -123,6 +123,107 @@ namespace DiaspoChantier.Data.Migrations
                     b.ToTable("Entrepreneurs");
                 });
 
+            modelBuilder.Entity("DiaspoChantier.Models.Jalon", b =>
+                {
+                    b.Property<int>("IdJalon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdJalon"));
+
+                    b.Property<DateTime?>("DateLimite")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateValidation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("EstValide")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("IdProjet")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Montant")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Ordre")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("IdJalon");
+
+                    b.HasIndex("IdProjet");
+
+                    b.ToTable("Jalons");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Projet", b =>
+                {
+                    b.Property<int>("IdProjet")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProjet"));
+
+                    b.Property<decimal>("BudgetTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateMiseAJour")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IdEntrepreneur")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdInvestisseur")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Localisation")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Statut")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titre")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("TypeProjet")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IdProjet");
+
+                    b.HasIndex("IdEntrepreneur");
+
+                    b.HasIndex("IdInvestisseur");
+
+                    b.ToTable("Projets");
+                });
+
             modelBuilder.Entity("DiaspoChantier.Models.TokenResetPassword", b =>
                 {
                     b.Property<int>("Id")
@@ -417,6 +518,35 @@ namespace DiaspoChantier.Data.Migrations
                     b.Navigation("Utilisateur");
                 });
 
+            modelBuilder.Entity("DiaspoChantier.Models.Jalon", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Projet", "Projet")
+                        .WithMany("Jalons")
+                        .HasForeignKey("IdProjet")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Projet");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Projet", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Entrepreneur", "Entrepreneur")
+                        .WithMany()
+                        .HasForeignKey("IdEntrepreneur")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("DiaspoChantier.Models.Utilisateur", "Investisseur")
+                        .WithMany()
+                        .HasForeignKey("IdInvestisseur")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Entrepreneur");
+
+                    b.Navigation("Investisseur");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -471,6 +601,11 @@ namespace DiaspoChantier.Data.Migrations
             modelBuilder.Entity("DiaspoChantier.Models.Entrepreneur", b =>
                 {
                     b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Projet", b =>
+                {
+                    b.Navigation("Jalons");
                 });
 
             modelBuilder.Entity("DiaspoChantier.Models.Utilisateur", b =>

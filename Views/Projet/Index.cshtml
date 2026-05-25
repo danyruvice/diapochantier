@@ -1,0 +1,95 @@
+@model DiaspoChantier.ViewModels.TableauBordProjetViewModel
+
+@{
+    ViewData["Title"] = "Mes projets";
+}
+
+@if (TempData["MessageSucces"] is string messageSucces)
+{
+    <div class="alert alert-success">@messageSucces</div>
+}
+
+<section class="section-panel mb-4" id="jalons">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Tableau de bord projets</p>
+            <h1 class="section-title mb-0">Mes projets</h1>
+            <p class="section-copy mb-0">Créez, suivez et relancez vos chantiers avec un tableau de bord simple et lisible.</p>
+        </div>
+        <div class="section-header-action">
+            <a class="btn btn-modern-primary" asp-controller="Projet" asp-action="Creer">Nouveau projet</a>
+        </div>
+    </div>
+
+    <div class="metric-grid mt-3">
+        <div class="metric-card">
+            <strong>@Model.TotalProjets</strong>
+            <span>projets créés</span>
+        </div>
+        <div class="metric-card">
+            <strong>@Model.ProjetsActifs</strong>
+            <span>projets en cours</span>
+        </div>
+        <div class="metric-card">
+            <strong>@Model.JalonsEnAttente</strong>
+            <span>jalons à valider</span>
+        </div>
+    </div>
+</section>
+
+<section class="section-panel">
+    <div class="section-header mb-3">
+        <div>
+            <p class="eyebrow">Liste et suivi</p>
+            <h2 class="section-title mb-0">Projets récurrents</h2>
+        </div>
+    </div>
+
+    @if (Model.Projets.Count == 0)
+    {
+        <div class="alert alert-success">
+            Aucun projet pour le moment. Lancez votre premier projet depuis le bouton <strong>"Nouveau projet"</strong>.
+        </div>
+    }
+    else
+    {
+        <div class="project-list">
+            @foreach (var projet in Model.Projets)
+            {
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <p class="eyebrow mb-1">@projet.TypeProjet</p>
+                            <h3 class="mb-1">@projet.Titre</h3>
+                            <p class="project-meta">@projet.Localisation · Créé le @projet.DateCreation.ToString("dd/MM/yyyy")</p>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary-emphasis">@projet.Statut</span>
+                    </div>
+
+                    <div class="project-stats-grid">
+                        <div>
+                            <p class="project-stat-label">Budget</p>
+                            <strong>@projet.BudgetTotal.ToString("N0") FCFA</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Jalons</p>
+                            <strong>@projet.JalonsTotal</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Jalons validés</p>
+                            <strong>@projet.JalonsValides</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">En attente</p>
+                            <strong>@projet.JalonsEnAttente</strong>
+                        </div>
+                    </div>
+
+                    <div class="project-footer-actions">
+                        <a class="btn btn-primary" asp-controller="Projet" asp-action="Details" asp-route-id="@projet.IdProjet">Voir le projet</a>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>

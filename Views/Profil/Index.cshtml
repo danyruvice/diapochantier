@@ -198,14 +198,14 @@
                     <div class="form-section">
                         <div class="form-section-title">Photo de profil</div>
                         <div class="upload-zone" id="zone-photo">
-                            <input asp-for="PhotoProfil" type="file" class="upload-input" accept=".jpg,.jpeg,.png,.webp" id="input-photo" />
+                            <input asp-for="PhotoProfil" type="file" class="upload-input" accept="image/*" capture="environment" id="input-photo" />
                             <label for="input-photo" class="upload-label">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
                                 <span class="upload-title">Changer la photo de profil</span>
-                                <span class="upload-hint">JPG, PNG ou WebP — max 5 Mo</span>
+                                <span class="upload-hint">Prise depuis l'appareil photo ou import depuis l'ordinateur</span>
                                 <span class="upload-filename" id="name-photo"></span>
                             </label>
                             <span asp-validation-for="PhotoProfil" class="text-danger"></span>

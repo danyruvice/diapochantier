@@ -43,16 +43,30 @@ namespace DiaspoChantier.Services
         private async Task EnvoyerMessageAsync(string email, string sujet, string contenu)
         {
             var hote = _configuration["Smtp:Host"];
-            var port = int.TryParse(_configuration["Smtp:Port"], out var valeurPort) ? valeurPort : 0;
+            var portTexte = _configuration["Smtp:Port"];
             var expediteur = _configuration["Smtp:From"];
             var utilisateur = _configuration["Smtp:Username"];
             var motDePasse = _configuration["Smtp:Password"];
             var ssl = bool.TryParse(_configuration["Smtp:EnableSsl"], out var activerSsl) && activerSsl;
 
-            if (string.IsNullOrWhiteSpace(hote) || string.IsNullOrWhiteSpace(expediteur) || port <= 0)
+            if (string.IsNullOrWhiteSpace(hote))
             {
-                Console.WriteLine($"[EMAIL] {email} | {sujet} | {contenu}");
-                return;
+                throw new InvalidOperationException("La configuration SMTP est incomplète : Smtp:Host est vide.");
+            }
+
+            if (!int.TryParse(portTexte, out var port) || port <= 0)
+            {
+                throw new InvalidOperationException("La configuration SMTP est invalide : Smtp:Port doit être un nombre positif.");
+            }
+
+            if (string.IsNullOrWhiteSpace(expediteur))
+            {
+                throw new InvalidOperationException("La configuration SMTP est incomplète : Smtp:From est vide.");
+            }
+
+            if (string.IsNullOrWhiteSpace(utilisateur) || string.IsNullOrWhiteSpace(motDePasse))
+            {
+                throw new InvalidOperationException("La configuration SMTP est incomplète : les identifiants Smtp:Username et Smtp:Password sont requis.");
             }
 
             using var message = new MailMessage
@@ -67,9 +81,7 @@ namespace DiaspoChantier.Services
             using var client = new SmtpClient(hote, port)
             {
                 EnableSsl = ssl,
-                Credentials = string.IsNullOrWhiteSpace(utilisateur) || string.IsNullOrWhiteSpace(motDePasse)
-                    ? null
-                    : new NetworkCredential(utilisateur, motDePasse)
+                Credentials = new NetworkCredential(utilisateur, motDePasse)
             };
 
             await client.SendMailAsync(message);

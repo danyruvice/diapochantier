@@ -14,6 +14,7 @@
 
         <div class="header-sticky">
 
+
             <nav class="navbar">
                 <a class="brand" asp-controller="Home" asp-action="Index">
                     <div class="brand-icon">
@@ -27,7 +28,7 @@
 
                 <div class="search-wrap">
                     <input type="text"
-                           placeholder="Chercher un entrepreneur, une ville, un projet..."
+                           placeholder="Chercher un entrepreneur, une ville..."
                            aria-label="Rechercher" />
                     <button class="search-btn" type="button" aria-label="Rechercher">
                         <img src="~/loupe_recherche.jpg" alt="Rechercher" class="search-icon" style="width:16px;height:16px;object-fit:contain;display:block;flex-shrink:0;">
@@ -38,10 +39,6 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <a class="nav-btn" asp-controller="Profil" asp-action="MonProfil">Mon compte</a>
-                        @if (User.IsInRole("Administrateur"))
-                        {
-                            <a class="nav-btn" asp-controller="Admin" asp-action="Index">Admin</a>
-                        }
                         <a class="nav-btn" asp-controller="Auth" asp-action="Deconnexion">Déconnexion</a>
                     }
                     else
@@ -49,27 +46,14 @@
                         <a class="nav-btn" asp-controller="Auth" asp-action="Connexion">Connexion</a>
                         <a class="nav-btn" asp-controller="Auth" asp-action="ChoisirTypeCompte">Créer un compte</a>
                     }
-                    <a class="nav-btn" href="#alertes">Alertes</a>
-                    <a class="nav-btn" href="#messages">
-                        Messages <span class="badge">3</span>
-                    </a>
-                    <a class="nav-btn nav-btn-primary btn-cta-sm"
-                       asp-controller="Projet"
-                       asp-action="Creer">
-                        Nouveau projet
-                    </a>
+                    <a class="nav-btn nav-btn-primary btn-cta-sm" asp-controller="Projet" asp-action="Creer">Nouveau projet</a>
                 </div>
             </nav>
 
             <div class="subnav" role="navigation" aria-label="Navigation principale">
                 <a class="subnav-link active" asp-controller="Home" asp-action="Index">Accueil</a>
-                <a class="subnav-link" href="#mes-projets">Mes projets</a>
-                <a class="subnav-link" href="#entrepreneurs">Entrepreneurs</a>
-                <a class="subnav-link" href="#fournisseurs">Fournisseurs certifiés</a>
-                <a class="subnav-link" href="#sequestre">Séquestre</a>
-                <a class="subnav-link" href="#jalons">Jalons</a>
-                <a class="subnav-link" href="#photos-gps">Photos GPS</a>
-                <a class="subnav-link" href="#support">Support</a>
+                <a class="subnav-link" asp-controller="Projet" asp-action="Index">Mes projets</a>
+                <a class="subnav-link" asp-controller="Dashboard" asp-action="Index">Tableau de bord</a>
             </div>
 
         </div>
@@ -87,20 +71,20 @@
         </div>
         <div>
             <div class="footer-col-title">Plateforme</div>
-            <a class="footer-link" href="#comment-ca-marche">Comment ça marche</a>
-            <a class="footer-link" href="#creer-un-projet">Créer un projet</a>
+            <a class="footer-link" asp-controller="Home" asp-action="Index">Comment ça marche</a>
+            <a class="footer-link" asp-controller="Projet" asp-action="Creer">Créer un projet</a>
         </div>
         <div>
             <div class="footer-col-title">Sécurité</div>
-            <a class="footer-link" href="#photos-gps">Photos GPS anti-fraude</a>
+            <a class="footer-link" asp-controller="Projet" asp-action="Index">Photos GPS anti-fraude</a>
         </div>
         <div>
             <div class="footer-col-title">Support</div>
-            <a class="footer-link" href="#centre-aide">Centre d'aide</a>
+            <a class="footer-link" asp-controller="Home" asp-action="Index">Centre d'aide</a>
         </div>
         <div>
             <div class="footer-col-title">Légal</div>
-            <a class="footer-link" href="#mentions-legales">Mentions légales</a>
+            <a class="footer-link" asp-controller="Home" asp-action="Index">Mentions légales</a>
         </div>
     </div>
 

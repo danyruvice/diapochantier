@@ -1,0 +1,221 @@
+@model DiaspoChantier.ViewModels.DetailProjetViewModel
+
+@{
+    ViewData["Title"] = Model.Titre;
+}
+
+@if (ViewData["MessageSucces"] is string messageSucces)
+{
+    <div class="alert alert-success">@messageSucces</div>
+}
+
+@if (ViewData["MessageErreur"] is string messageErreur)
+{
+    <div class="alert alert-danger">@messageErreur</div>
+}
+
+<section class="section-panel mb-4">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Projet</p>
+            <h1 class="section-title mb-1">@Model.Titre</h1>
+            <p class="section-copy mb-0">@Model.TypeProjet · @Model.Localisation · Créé le @Model.DateCreation.ToString("dd/MM/yyyy")</p>
+        </div>
+        <div class="section-header-action">
+            <span class="badge bg-primary-subtle text-primary-emphasis">@Model.Statut</span>
+        </div>
+    </div>
+
+    <div class="project-stats-grid mt-3">
+        <div>
+            <p class="project-stat-label">Budget total</p>
+            <strong>@Model.BudgetTotal.ToString("N0") FCFA</strong>
+        </div>
+        <div>
+            <p class="project-stat-label">Latitude</p>
+            <strong>@Model.Latitude.ToString("0.####")</strong>
+        </div>
+        <div>
+            <p class="project-stat-label">Longitude</p>
+            <strong>@Model.Longitude.ToString("0.####")</strong>
+        </div>
+        <div>
+            <p class="project-stat-label">Entrepreneur assigné</p>
+            <strong>@(string.IsNullOrWhiteSpace(Model.Entrepreneur) ? "En attente de sélection" : Model.Entrepreneur)</strong>
+        </div>
+    </div>
+</section>
+
+<section class="section-panel mb-4">
+    <div class="section-header mb-3">
+        <div>
+            <p class="eyebrow">Photos GPS</p>
+            <h2 class="section-title mb-0">Téléverser une photo de chantier</h2>
+            <p class="section-copy mb-0">Capturez une photo depuis l’appareil mobile, puis récupérez la position GPS pour vérifier que la prise est bien située sur le chantier.</p>
+        </div>
+    </div>
+
+    <form asp-action="TeleverserPhoto" asp-route-id="@Model.IdProjet" method="post" enctype="multipart/form-data" class="photo-gps-form" data-photo-gps-form>
+        @Html.AntiForgeryToken()
+
+        <div class="photo-gps-fields">
+            <div>
+                <label class="form-label" for="photoProjet">Photo du chantier</label>
+                <input id="photoProjet" name="photoProjet" type="file" accept="image/*" capture="environment" class="form-control" required />
+                <small class="text-muted">Utilisez l’appareil photo mobile pour un téléversement rapide.</small>
+            </div>
+
+            <div class="photo-gps-location-grid">
+                <div>
+                    <label class="form-label" for="latitude">Latitude</label>
+                    <input id="latitude" name="latitude" type="text" class="form-control" placeholder="Cliquez sur localiser" readonly />
+                </div>
+                <div>
+                    <label class="form-label" for="longitude">Longitude</label>
+                    <input id="longitude" name="longitude" type="text" class="form-control" placeholder="Cliquez sur localiser" readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="photo-gps-actions">
+            <button type="button" class="btn btn-modern-primary" data-gps-capture>Localiser la position</button>
+            <button type="submit" class="btn btn-primary">Téléverser la photo GPS</button>
+        </div>
+
+        <p class="gps-status" data-gps-status>La position GPS sera récupérée automatiquement depuis votre appareil.</p>
+        <div data-photo-preview class="photo-preview"></div>
+    </form>
+
+    @if (Model.Photos.Count > 0)
+    {
+        <div class="photo-gps-gallery mt-3">
+            @foreach (var photo in Model.Photos)
+            {
+                <article class="photo-gps-card">
+                    <img src="@photo.Url" alt="Photo GPS du projet @Model.Titre" />
+                    <div class="photo-gps-card-body">
+                        <div class="photo-gps-badge @(photo.EstAuthentique ? "is-valid" : "is-warning")">@photo.StatutTexte</div>
+                        <p class="section-copy mb-1">@photo.Horodatage</p>
+                        <p class="section-copy mb-1">Distance chantier : @photo.Distance</p>
+                        <p class="section-copy mb-1">Coordonnées : @photo.Latitude, @photo.Longitude</p>
+                        <p class="section-copy mb-0">Source : @photo.Source</p>
+                        @if (!string.IsNullOrWhiteSpace(photo.HashSHA256))
+                        {
+                            <p class="section-copy mb-0">Hash : @photo.HashSHA256</p>
+                        }
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<section class="section-panel">
+    <div class="section-header mb-3">
+        <div>
+            <p class="eyebrow">Jalons</p>
+            <h2 class="section-title mb-0">Suivi des jalons</h2>
+        </div>
+    </div>
+
+    @if (Model.Jalons.Count == 0)
+    {
+        <div class="alert alert-success">Ce projet n’a pas encore de jalon associé. Ajoutez-en depuis le formulaire de création ou mettez à jour votre dossier.</div>
+    }
+    else
+    {
+        <div class="milestone-list">
+            @foreach (var jalon in Model.Jalons.OrderBy(j => j.Ordre))
+            {
+                <article class="milestone-card">
+                    <div class="milestone-card-header">
+                        <div>
+                            <p class="eyebrow mb-1">Jalon @jalon.Ordre</p>
+                            <h3 class="mb-1">@jalon.Titre</h3>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary-emphasis">@(jalon.EstValide ? "Validé" : "En attente")</span>
+                    </div>
+
+                    <p class="section-copy mb-3">@((string.IsNullOrWhiteSpace(jalon.Description) ? "Aucune description détaillée renseignée." : jalon.Description))</p>
+
+                    <div class="project-stats-grid">
+                        <div>
+                            <p class="project-stat-label">Montant</p>
+                            <strong>@jalon.Montant.ToString("N0") FCFA</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Date limite</p>
+                            <strong>@(jalon.DateLimite?.ToString("dd/MM/yyyy") ?? "Non définie")</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Validation</p>
+                            <strong>@(jalon.DateValidation?.ToString("dd/MM/yyyy") ?? "À venir")</strong>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+
+    <div class="mt-4">
+        <a class="btn btn-modern-secondary" asp-controller="Projet" asp-action="Index">Retour à mes projets</a>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('[data-photo-gps-form]');
+        if (!form) {
+            return;
+        }
+
+        const latitudeInput = form.querySelector('[name="latitude"]');
+        const longitudeInput = form.querySelector('[name="longitude"]');
+        const status = form.querySelector('[data-gps-status]');
+        const captureButton = form.querySelector('[data-gps-capture]');
+        const fileInput = form.querySelector('[name="photoProjet"]');
+        const preview = form.querySelector('[data-photo-preview]');
+
+        if (captureButton) {
+            captureButton.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                if (!navigator.geolocation) {
+                    status.textContent = 'La géolocalisation n’est pas disponible dans ce navigateur.';
+                    return;
+                }
+
+                captureButton.disabled = true;
+                captureButton.textContent = 'Localisation en cours...';
+
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    latitudeInput.value = position.coords.latitude.toFixed(6);
+                    longitudeInput.value = position.coords.longitude.toFixed(6);
+                    status.textContent = 'Position GPS capturée. Vous pouvez maintenant téléverser la photo.';
+                    captureButton.textContent = 'Position capturée';
+                    captureButton.disabled = false;
+                }, function () {
+                    status.textContent = 'La récupération de la position GPS a échoué. Autorisez l’accès à la localisation ou réessayez.';
+                    captureButton.textContent = 'Réessayer la localisation';
+                    captureButton.disabled = false;
+                }, { enableHighAccuracy: true, timeout: 10000 });
+            });
+        }
+
+        if (fileInput && preview) {
+            fileInput.addEventListener('change', function () {
+                const [fichier] = this.files || [];
+                if (!fichier) {
+                    preview.innerHTML = '';
+                    return;
+                }
+
+                const url = URL.createObjectURL(fichier);
+                preview.innerHTML = `<img src="${url}" alt="Aperçu de la photo GPS" />`;
+            });
+        }
+    });
+</script>
+}
+

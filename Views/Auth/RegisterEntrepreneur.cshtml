@@ -143,7 +143,7 @@
                 <div class="form-check mb-4">
                     <input asp-for="AccepterConditions" class="form-check-input" />
                     <label asp-for="AccepterConditions" class="form-check-label">
-                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                        J'accepte les <a asp-controller="Home" asp-action="Index">conditions d'utilisation</a> et la <a asp-controller="Home" asp-action="Index">politique de confidentialité</a>
                     </label>
                     <span asp-validation-for="AccepterConditions" class="text-danger"></span>
                 </div>

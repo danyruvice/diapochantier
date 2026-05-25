@@ -1,0 +1,205 @@
+@model DiaspoChantier.ViewModels.ModeleCreationProjet
+
+@{
+    ViewData["Title"] = "Créer un projet";
+}
+
+@if (TempData["MessageSucces"] is string messageSucces)
+{
+    <div class="alert alert-success">@messageSucces</div>
+}
+
+<div class="section-panel">
+    <div class="mb-4">
+        <p class="eyebrow">Début du parcours Sprint 2</p>
+        <h1 class="section-title mb-1">Créer un projet</h1>
+        <p class="section-copy mb-0">Définissez les informations générales du chantier et ajoutez les jalons qui composeront le budget du projet.</p>
+    </div>
+
+    <form asp-action="Creer" asp-controller="Projet" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Informations générales</h2>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label asp-for="Titre" class="form-label">Titre du projet</label>
+                    <input asp-for="Titre" class="form-control" placeholder="Ex. Maison familiale Bafoussam" />
+                    <span asp-validation-for="Titre" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TypeProjet" class="form-label">Type de projet</label>
+                    <input asp-for="TypeProjet" class="form-control" placeholder="Ex. Construction résidentielle" />
+                    <span asp-validation-for="TypeProjet" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row-2 mt-3">
+                <div class="form-group">
+                    <label asp-for="Localisation" class="form-label">Localisation</label>
+                    <input asp-for="Localisation" class="form-control" placeholder="Ex. Bafoussam, Ouest" />
+                    <span asp-validation-for="Localisation" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BudgetTotal" class="form-label">Budget total</label>
+                    <input asp-for="BudgetTotal" type="number" min="0" step="1000" class="form-control" placeholder="Ex. 5000000" />
+                    <span asp-validation-for="BudgetTotal" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row-2 mt-3">
+                <div class="form-group">
+                    <label asp-for="Latitude" class="form-label">Latitude</label>
+                    <input asp-for="Latitude" type="number" step="0.0001" class="form-control" placeholder="Ex. 5.493" />
+                    <span asp-validation-for="Latitude" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Longitude" class="form-label">Longitude</label>
+                    <input asp-for="Longitude" type="number" step="0.0001" class="form-control" placeholder="Ex. 10.409" />
+                    <span asp-validation-for="Longitude" class="text-danger"></span>
+                </div>
+            </div>
+            <p class="section-copy mt-2 mb-0">La validation inclut un contrôle de zone Cameroun pour sécuriser la géolocalisation du projet.</p>
+        </div>
+
+        <div class="form-section">
+            <div class="section-header mb-3">
+                <div>
+                    <h2 class="form-section-title mb-1">Jalons du projet</h2>
+                    <p class="section-copy mb-0">Ajoutez les jalons qui composent le budget. La somme totale des jalons doit rester inférieure ou égale au budget du projet.</p>
+                </div>
+                <button type="button" id="add-milestone" class="btn btn-modern-secondary">+ Ajouter un jalon</button>
+            </div>
+
+            <div id="milestone-container">
+                @for (var index = 0; index < Model.Jalons.Count; index++)
+                {
+                    <div class="milestone-row" data-milestone-row>
+                        <div class="milestone-row-header">
+                            <h3>Jalon @(index + 1)</h3>
+                            <button type="button" class="btn btn-modern-secondary" data-remove-milestone>Retirer</button>
+                        </div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="Jalons_@(index)__Titre">Titre du jalon</label>
+                                <input name="Jalons[@index].Titre" id="Jalons_@(index)__Titre" value="@Model.Jalons[index].Titre" class="form-control" placeholder="Ex. Fondations" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="Jalons_@(index)__Montant">Montant</label>
+                                <input name="Jalons[@index].Montant" id="Jalons_@(index)__Montant" type="number" min="0" step="1000" value="@Model.Jalons[index].Montant" class="form-control" placeholder="Ex. 1500000" />
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="form-label" for="Jalons_@(index)__Description">Description</label>
+                            <textarea name="Jalons[@index].Description" id="Jalons_@(index)__Description" class="form-control" rows="3" placeholder="Précisez l’objectif du jalon">@Model.Jalons[index].Description</textarea>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="form-label" for="Jalons_@(index)__DateLimite">Date limite</label>
+                            <input name="Jalons[@index].DateLimite" id="Jalons_@(index)__DateLimite" type="date" value="@(Model.Jalons[index].DateLimite?.ToString("yyyy-MM-dd"))" class="form-control" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+            <a class="btn btn-modern-secondary" asp-controller="Projet" asp-action="Index">Retour à mes projets</a>
+            <button type="submit" class="btn btn-modern-primary">Créer le projet</button>
+        </div>
+    </form>
+</div>
+
+<template id="milestone-template">
+    <div class="milestone-row" data-milestone-row>
+        <div class="milestone-row-header">
+            <h3>Jalon</h3>
+            <button type="button" class="btn btn-modern-secondary" data-remove-milestone>Retirer</button>
+        </div>
+        <div class="form-row-2">
+            <div class="form-group">
+                <label class="form-label" data-field-label>Titre du jalon</label>
+                <input class="form-control" data-field="Titre" placeholder="Ex. Fondations" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-field-label>Montant</label>
+                <input class="form-control" data-field="Montant" type="number" min="0" step="1000" placeholder="Ex. 1500000" />
+            </div>
+        </div>
+        <div class="form-group mt-3">
+            <label class="form-label" data-field-label>Description</label>
+            <textarea class="form-control" data-field="Description" rows="3" placeholder="Précisez l’objectif du jalon"></textarea>
+        </div>
+        <div class="form-group mt-3">
+            <label class="form-label" data-field-label>Date limite</label>
+            <input class="form-control" data-field="DateLimite" type="date" />
+        </div>
+    </div>
+</template>
+
+@section Scripts {
+<script>
+(function () {
+    const container = document.getElementById('milestone-container');
+    const template = document.getElementById('milestone-template');
+    const addButton = document.getElementById('add-milestone');
+
+    if (!container || !template || !addButton) {
+        return;
+    }
+
+    const fields = ['Titre', 'Description', 'Montant', 'DateLimite'];
+
+    function renumberRows() {
+        const rows = container.querySelectorAll('[data-milestone-row]');
+        rows.forEach((row, index) => {
+            row.querySelector('h3').textContent = `Jalon ${index + 1}`;
+            row.querySelectorAll('[data-field]').forEach((field) => {
+                const name = `Jalons[${index}].${field.dataset.field}`;
+                field.name = name;
+                field.id = `Jalons_${index}__${field.dataset.field}`;
+            });
+            row.querySelectorAll('[data-field-label]').forEach((label) => {
+                const field = label.nextElementSibling;
+                if (field) {
+                    label.setAttribute('for', field.id);
+                }
+            });
+        });
+    }
+
+    function createRow() {
+        const clone = template.content.firstElementChild.cloneNode(true);
+        const rows = container.querySelectorAll('[data-milestone-row]');
+        const index = rows.length;
+        clone.querySelectorAll('[data-field]').forEach((field) => {
+            field.name = `Jalons[${index}].${field.dataset.field}`;
+            field.id = `Jalons_${index}__${field.dataset.field}`;
+        });
+        clone.querySelectorAll('[data-field-label]').forEach((label) => {
+            const field = label.nextElementSibling;
+            if (field) {
+                label.setAttribute('for', field.id);
+            }
+        });
+        clone.querySelector('[data-remove-milestone]').addEventListener('click', () => {
+            clone.remove();
+            renumberRows();
+        });
+        container.appendChild(clone);
+        renumberRows();
+    }
+
+    addButton.addEventListener('click', createRow);
+
+    container.querySelectorAll('[data-remove-milestone]').forEach((button) => {
+        button.addEventListener('click', () => {
+            button.closest('[data-milestone-row]')?.remove();
+            renumberRows();
+        });
+    });
+
+    renumberRows();
+})();
+</script>
+}
