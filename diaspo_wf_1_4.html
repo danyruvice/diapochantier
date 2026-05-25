@@ -1,0 +1,1147 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+.wf-wrap{background:#fff;color:#222;padding:16px}
+.wf-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.wf-tab{padding:5px 14px;border:1px solid #888;border-radius:3px;cursor:pointer;font-size:12px;background:#fff;color:#555}
+.wf-tab.active{background:#2a3a5e;color:#fff;border-color:#2a3a5e}
+.wf-page{display:none}
+.wf-page.open{display:block}
+.wf-title{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid #ddd}
+/* wireframe components */
+.wf-status{border:1px dashed #888;border-radius:3px;padding:5px 10px;font-size:11px;color:#555;margin-bottom:10px;background:#fafafa}
+.wf-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ccc;padding:8px 12px;margin-bottom:8px;background:#f5f5f5}
+.wf-logo{border:1px solid #aaa;padding:3px 10px;font-size:11px;font-weight:700;color:#555;border-radius:2px}
+.wf-h-title{font-size:13px;font-weight:700;color:#333}
+.wf-h-user{font-size:11px;color:#666}
+.wf-nav{display:flex;gap:2px;border-bottom:1px solid #ccc;margin-bottom:12px;padding:0 8px}
+.wf-nav-item{padding:7px 14px;font-size:12px;color:#555;cursor:pointer;border-bottom:2px solid transparent}
+.wf-nav-item.active{border-bottom-color:#2a3a5e;color:#2a3a5e;font-weight:600}
+.wf-section-title{font-size:14px;font-weight:700;color:#222;margin-bottom:12px}
+.wf-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.wf-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.wf-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.wf-card{border:1px solid #ccc;border-radius:3px;padding:10px;background:#fff}
+.wf-card-head{font-size:12px;font-weight:600;color:#333;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee}
+.wf-field-row{display:flex;gap:8px;margin-bottom:6px}
+.wf-field{flex:1}
+.wf-label{font-size:10px;color:#777;margin-bottom:2px}
+.wf-input{border:1px solid #bbb;border-radius:2px;padding:5px 8px;font-size:11px;color:#aaa;width:100%}
+.wf-btn{border:1px solid #888;border-radius:2px;padding:5px 14px;font-size:12px;cursor:pointer;background:#fff;color:#333}
+.wf-btn-primary{background:#2a3a5e;color:#fff;border-color:#2a3a5e}
+.wf-btn-secondary{background:#f5f5f5;color:#555}
+.wf-btn-danger{background:#f8d0d0;color:#993333;border-color:#993333}
+.wf-placeholder{background:#e8e8e8;border-radius:2px;height:60px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888;margin-bottom:6px}
+.wf-placeholder-sm{background:#e8e8e8;border-radius:2px;height:36px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888}
+.wf-placeholder-lg{background:#e8e8e8;border-radius:2px;height:100px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888;margin-bottom:6px}
+.wf-text-line{background:#e0e0e0;height:8px;border-radius:2px;margin-bottom:4px}
+.wf-text-line.short{width:60%}
+.wf-text-line.med{width:80%}
+.wf-badge{display:inline-block;padding:1px 8px;border-radius:2px;font-size:10px;font-weight:600}
+.wf-badge-ok{background:#d0f0d8;color:#336633;border:1px solid #336633}
+.wf-badge-warn{background:#fce8c0;color:#996600;border:1px solid #996600}
+.wf-badge-info{background:#d8e8f8;color:#336699;border:1px solid #336699}
+.wf-badge-new{background:#ededff;color:#553399;border:1px solid #553399}
+.wf-kpi{border:1px solid #ccc;border-radius:3px;padding:10px;text-align:center}
+.wf-kpi-val{font-size:22px;font-weight:700;color:#2a3a5e}
+.wf-kpi-lbl{font-size:10px;color:#777;margin-top:2px}
+.wf-sidebar{border:1px solid #ccc;border-radius:3px;padding:10px}
+.wf-main-sidebar{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.wf-list-item{border-bottom:1px solid #eee;padding:7px 0;display:flex;align-items:center;gap:8px;font-size:11px}
+.wf-list-item:last-child{border-bottom:none}
+.wf-avatar{width:28px;height:28px;border-radius:50%;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#555;flex-shrink:0}
+.wf-progress-bar{height:5px;background:#e0e0e0;border-radius:3px;margin-top:4px;overflow:hidden}
+.wf-progress-fill{height:100%;background:#2a3a5e;border-radius:3px}
+.wf-map{border:1px dashed #aaa;height:90px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#aaa;border-radius:2px;margin-bottom:6px}
+.wf-table{width:100%;border-collapse:collapse;font-size:11px}
+.wf-table th{background:#f0f0f0;padding:5px 8px;text-align:left;border:1px solid #ccc;font-weight:600;font-size:10px}
+.wf-table td{padding:5px 8px;border:1px solid #eee;color:#444}
+.wf-chat-bubble{background:#e8edf8;border-radius:3px;padding:6px 10px;font-size:10px;color:#333;margin-bottom:5px}
+.wf-chat-bubble.right{background:#f0f0f0;text-align:right}
+.wf-chat-input{display:flex;gap:6px;margin-top:8px}
+.wf-divider{height:1px;background:#eee;margin:10px 0}
+.wf-section-sub{font-size:10px;font-weight:600;color:#666;margin-bottom:6px;margin-top:10px;text-transform:uppercase;letter-spacing:.04em}
+.wf-num{font-size:10px;color:#888;margin-bottom:2px}
+</style>
+
+<div class="wf-wrap">
+<div class="wf-tabs" id="wf-tabs">
+  <button class="wf-tab active" onclick="wfShow(0)">WF-01 Connexion</button>
+  <button class="wf-tab" onclick="wfShow(1)">WF-02 Inscription</button>
+  <button class="wf-tab" onclick="wfShow(2)">WF-03 Dashboard Investisseur</button>
+  <button class="wf-tab" onclick="wfShow(3)">WF-04 Créer projet</button>
+  <button class="wf-tab" onclick="wfShow(4)">WF-05 Détail projet + Jalons</button>
+  <button class="wf-tab" onclick="wfShow(5)">WF-06 Photos GPS</button>
+  <button class="wf-tab" onclick="wfShow(6)">WF-07 Séquestre</button>
+  <button class="wf-tab" onclick="wfShow(7)">WF-08 Appel vidéo</button>
+  <button class="wf-tab" onclick="wfShow(8)">WF-09 Litige</button>
+  <button class="wf-tab" onclick="wfShow(9)">WF-10 Dashboard Entrepreneur</button>
+  <button class="wf-tab" onclick="wfShow(10)">WF-11 Soumettre jalon</button>
+  <button class="wf-tab" onclick="wfShow(11)">WF-12 Photo GPS (Entrepreneur)</button>
+  <button class="wf-tab" onclick="wfShow(12)">WF-13 Commander matériaux</button>
+  <button class="wf-tab" onclick="wfShow(13)">WF-14 Messagerie</button>
+  <button class="wf-tab" onclick="wfShow(14)">WF-15 Catalogue Fournisseur</button>
+  <button class="wf-tab" onclick="wfShow(15)">WF-16 Gestion commandes</button>
+  <button class="wf-tab" onclick="wfShow(16)">WF-17 Liste litiges (Médiateur)</button>
+  <button class="wf-tab" onclick="wfShow(17)">WF-18 Détail litige + Décision</button>
+  <button class="wf-tab" onclick="wfShow(18)">WF-19 Dashboard Admin</button>
+  <button class="wf-tab" onclick="wfShow(19)">WF-20 Gestion utilisateurs</button>
+  <button class="wf-tab" onclick="wfShow(20)">WF-21 Rapport Expert</button>
+  <button class="wf-tab" onclick="wfShow(21)">WF-22 Notifications</button>
+</div>
+
+<!-- WF-01 CONNEXION -->
+<div class="wf-page open" id="wf-0">
+<div class="wf-title">WF-01 — Page de connexion</div>
+<div class="wf-status">[✓ / ✗] Bandeau de statut — Succès : « Connexion réussie. » | Échec : « Identifiants invalides. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier</div>
+  <div></div>
+</div>
+<div style="max-width:400px;margin:20px auto;border:1px dashed #aaa;border-radius:4px;padding:20px">
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:#2a3a5e;margin-bottom:4px">Connexion</div>
+    <div style="font-size:11px;color:#888">Accédez à votre espace Diaspo-Chantier</div>
+  </div>
+  <div class="wf-field" style="margin-bottom:8px">
+    <div class="wf-label">Adresse email</div>
+    <div class="wf-input">exemple@email.com</div>
+  </div>
+  <div class="wf-field" style="margin-bottom:8px">
+    <div class="wf-label">Mot de passe</div>
+    <div class="wf-input">••••••••</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+    <label style="font-size:11px;color:#555"><input type="checkbox" style="margin-right:4px"/>Se souvenir de moi</label>
+    <span style="font-size:11px;color:#2a3a5e;cursor:pointer">Mot de passe oublié ?</span>
+  </div>
+  <button class="wf-btn wf-btn-primary" style="width:100%;margin-bottom:8px">Se connecter →</button>
+  <div style="text-align:center;font-size:11px;color:#888;margin-top:8px">Pas encore de compte ? <span style="color:#2a3a5e">S'inscrire</span></div>
+  <div class="wf-divider"></div>
+  <div style="font-size:10px;color:#aaa;text-align:center">Rôles disponibles : Investisseur · Entrepreneur · Fournisseur</div>
+</div>
+</div>
+
+<!-- WF-02 INSCRIPTION -->
+<div class="wf-page" id="wf-1">
+<div class="wf-title">WF-02 — Inscription (3 étapes)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — Succès : « Email de confirmation envoyé. » | Erreur : « Email déjà utilisé. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Inscription</div>
+  <div class="wf-h-user">Étape 1/3</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">1. Informations</div>
+  <div class="wf-nav-item">2. Rôle &amp; documents</div>
+  <div class="wf-nav-item">3. Confirmation</div>
+</div>
+<div style="max-width:550px;margin:0 auto">
+  <div class="wf-card">
+    <div class="wf-card-head">Étape 1 — Informations personnelles</div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Prénom</div><div class="wf-input">Prénom</div></div>
+      <div class="wf-field"><div class="wf-label">Nom</div><div class="wf-input">Nom de famille</div></div>
+    </div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Adresse email</div><div class="wf-input">exemple@email.com</div></div>
+      <div class="wf-field"><div class="wf-label">Téléphone</div><div class="wf-input">+1 514 000 0000</div></div>
+    </div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Mot de passe</div><div class="wf-input">••••••••</div></div>
+      <div class="wf-field"><div class="wf-label">Confirmer mot de passe</div><div class="wf-input">••••••••</div></div>
+    </div>
+    <div class="wf-field-row">
+      <div class="wf-field">
+        <div class="wf-label">Je suis un(e)</div>
+        <select class="wf-input">
+          <option>Investisseur (diaspora)</option>
+          <option>Entrepreneur (Cameroun)</option>
+          <option>Fournisseur</option>
+        </select>
+      </div>
+      <div class="wf-field"><div class="wf-label">Pays de résidence</div><div class="wf-input">Canada 🇨🇦</div></div>
+    </div>
+    <div class="wf-field"><div class="wf-label">Adresse</div><div class="wf-input">Adresse complète</div></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="wf-btn wf-btn-secondary">Annuler</button>
+      <button class="wf-btn wf-btn-primary">Suivant →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-03 DASHBOARD INVESTISSEUR -->
+<div class="wf-page" id="wf-2">
+<div class="wf-title">WF-03 — Tableau de bord Investisseur</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Jalon en attente de votre validation. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Dashboard</div>
+  <div class="wf-h-user">David T. | Investisseur | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Accueil</div>
+  <div class="wf-nav-item">Mes projets</div>
+  <div class="wf-nav-item">Jalons</div>
+  <div class="wf-nav-item">Séquestre</div>
+  <div class="wf-nav-item">Messages</div>
+  <div class="wf-nav-item">Fournisseurs</div>
+  <div class="wf-nav-item">Notifications</div>
+</div>
+<div class="wf-section-title">Bonjour, David 👋</div>
+<div class="wf-grid-4" style="margin-bottom:14px">
+  <div class="wf-kpi"><div class="wf-kpi-val">2</div><div class="wf-kpi-lbl">Projets actifs</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val">2 400 CAD</div><div class="wf-kpi-lbl">En séquestre</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">1</div><div class="wf-kpi-lbl">Jalon à valider</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#336633">68%</div><div class="wf-kpi-lbl">Avancement moyen</div></div>
+</div>
+<div class="wf-main-sidebar">
+  <div>
+    <div class="wf-section-sub">Projets en cours</div>
+    <div class="wf-card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:12px;font-weight:600">Maison R+1 — Bafoussam</div>
+          <div style="font-size:10px;color:#888">Paul Kamga · Jalon 2/5</div>
+        </div>
+        <span class="wf-badge wf-badge-warn">À valider</span>
+      </div>
+      <div class="wf-progress-bar"><div class="wf-progress-fill" style="width:38%"></div></div>
+      <div style="font-size:10px;color:#888;margin-top:3px">38% — 1 200 CAD en séquestre</div>
+    </div>
+    <div class="wf-card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:12px;font-weight:600">Boutique — Yaoundé</div>
+          <div style="font-size:10px;color:#888">Marc Ateba · Jalon 4/5</div>
+        </div>
+        <span class="wf-badge wf-badge-ok">En cours</span>
+      </div>
+      <div class="wf-progress-bar"><div class="wf-progress-fill" style="width:71%"></div></div>
+      <div style="font-size:10px;color:#888;margin-top:3px">71% — 600 CAD en séquestre</div>
+    </div>
+    <div class="wf-section-sub">Jalon en attente de validation</div>
+    <div class="wf-card" style="border:1px solid #cc7700">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:12px;font-weight:600">Jalon 2 — Murs RDC</div>
+          <div style="font-size:10px;color:#888">7 photos soumises · Inventaire complet</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#2a3a5e">600 CAD</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="wf-btn wf-btn-primary" style="font-size:11px">Valider et libérer →</button>
+        <button class="wf-btn" style="font-size:11px">Voir les photos</button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="wf-sidebar">
+      <div class="wf-card-head">Activité récente</div>
+      <div class="wf-list-item"><div class="wf-avatar">PK</div><div><div style="font-size:11px">7 photos soumises</div><div style="font-size:10px;color:#888">il y a 2h</div></div></div>
+      <div class="wf-list-item"><div class="wf-avatar">MA</div><div><div style="font-size:11px">Jalon 4 validé</div><div style="font-size:10px;color:#888">hier</div></div></div>
+      <div class="wf-list-item"><div class="wf-avatar">SY</div><div><div style="font-size:11px">Facture vérifiée</div><div style="font-size:10px;color:#888">avant-hier</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-04 CRÉER PROJET -->
+<div class="wf-page" id="wf-3">
+<div class="wf-title">WF-04 — Créer un projet chantier</div>
+<div class="wf-status">[✓ / ✗] Bandeau — Succès : « Projet créé. » | Erreur : « Budget invalide. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Nouveau projet</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item">Accueil</div>
+  <div class="wf-nav-item active">Mes projets</div>
+  <div class="wf-nav-item">Jalons</div>
+  <div class="wf-nav-item">Séquestre</div>
+  <div class="wf-nav-item">Messages</div>
+</div>
+<div class="wf-section-title">Créer un projet</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Informations générales</div>
+    <div class="wf-field" style="margin-bottom:7px"><div class="wf-label">Titre du projet</div><div class="wf-input">Ex : Maison familiale Bafoussam</div></div>
+    <div class="wf-field" style="margin-bottom:7px"><div class="wf-label">Description</div><div class="wf-input" style="height:50px;color:#aaa">Description détaillée...</div></div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Budget total (CAD)</div><div class="wf-input">15 000</div></div>
+      <div class="wf-field"><div class="wf-label">Type de construction</div><div class="wf-input">Maison individuelle ▼</div></div>
+    </div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Date début souhaitée</div><div class="wf-input">jj/mm/aaaa</div></div>
+      <div class="wf-field"><div class="wf-label">Date fin souhaitée</div><div class="wf-input">jj/mm/aaaa</div></div>
+    </div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Localisation GPS du chantier</div>
+    <div class="wf-map">[Carte interactive — Cliquer pour marquer le chantier]</div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Latitude</div><div class="wf-input">5.4774</div></div>
+      <div class="wf-field"><div class="wf-label">Longitude</div><div class="wf-input">10.4171</div></div>
+    </div>
+    <div class="wf-field"><div class="wf-label">Ville / Quartier (Cameroun)</div><div class="wf-input">Bafoussam, Hauts-Plateaux</div></div>
+  </div>
+</div>
+<div class="wf-card" style="margin-bottom:12px">
+  <div class="wf-card-head">Définir les jalons du projet</div>
+  <table class="wf-table">
+    <thead><tr><th>#</th><th>Description du jalon</th><th>Montant alloué (CAD)</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><div class="wf-input">Ex : Fondations coulées</div></td><td><div class="wf-input">400</div></td><td><button class="wf-btn wf-btn-danger" style="font-size:10px;padding:2px 8px">Suppr.</button></td></tr>
+      <tr><td>2</td><td><div class="wf-input">Murs RDC montés</div></td><td><div class="wf-input">600</div></td><td><button class="wf-btn wf-btn-danger" style="font-size:10px;padding:2px 8px">Suppr.</button></td></tr>
+      <tr><td colspan="4"><button class="wf-btn" style="font-size:11px">+ Ajouter un jalon</button></td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:#888;margin-top:6px">Total jalons : 1 000 CAD / Budget : 15 000 CAD</div>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px">
+  <button class="wf-btn wf-btn-secondary">Annuler</button>
+  <button class="wf-btn wf-btn-primary">Créer le projet →</button>
+</div>
+</div>
+
+<!-- WF-05 DÉTAIL PROJET + JALONS -->
+<div class="wf-page" id="wf-4">
+<div class="wf-title">WF-05 — Détail projet + Jalons</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Jalon validé. 600 CAD libérés. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Maison Bafoussam</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item">Accueil</div>
+  <div class="wf-nav-item active">Mes projets</div>
+  <div class="wf-nav-item">Jalons</div>
+  <div class="wf-nav-item">Séquestre</div>
+  <div class="wf-nav-item">Messages</div>
+</div>
+<div class="wf-section-title">Maison familiale R+1 — Bafoussam</div>
+<div class="wf-grid-4" style="margin-bottom:12px">
+  <div class="wf-kpi"><div class="wf-kpi-val">38%</div><div class="wf-kpi-lbl">Avancement</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">Jalon 2</div><div class="wf-kpi-lbl">En cours</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val">1 200 CAD</div><div class="wf-kpi-lbl">Séquestre restant</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val">Paul K.</div><div class="wf-kpi-lbl">Chef de chantier</div></div>
+</div>
+<div class="wf-main-sidebar">
+  <div>
+    <div class="wf-section-sub">Jalons du projet (5)</div>
+    <table class="wf-table">
+      <thead><tr><th>#</th><th>Description</th><th>Montant</th><th>Statut</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Fondations coulées</td><td>400 CAD</td><td><span class="wf-badge wf-badge-ok">Validé</span></td><td>—</td></tr>
+        <tr style="background:#fffde7"><td>2</td><td>Murs RDC montés</td><td>600 CAD</td><td><span class="wf-badge wf-badge-warn">Soumis</span></td><td><button class="wf-btn wf-btn-primary" style="font-size:10px;padding:2px 8px">Valider →</button></td></tr>
+        <tr><td>3</td><td>Dalle RDC coulée</td><td>400 CAD</td><td><span class="wf-badge wf-badge-info">En attente</span></td><td>—</td></tr>
+        <tr><td>4</td><td>Murs R+1 montés</td><td>300 CAD</td><td><span class="wf-badge wf-badge-info">En attente</span></td><td>—</td></tr>
+        <tr><td>5</td><td>Toiture + finitions</td><td>300 CAD</td><td><span class="wf-badge wf-badge-info">En attente</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="wf-btn" style="font-size:11px">📷 Voir photos GPS</button>
+      <button class="wf-btn" style="font-size:11px">📦 Inventaire</button>
+      <button class="wf-btn" style="font-size:11px">📹 Appel vidéo</button>
+      <button class="wf-btn wf-btn-danger" style="font-size:11px">⚠ Déclarer litige</button>
+    </div>
+  </div>
+  <div class="wf-sidebar">
+    <div class="wf-card-head">Informations projet</div>
+    <div class="wf-list-item">📍 Bafoussam, Hauts-Plateaux</div>
+    <div class="wf-list-item">💰 Budget : 2 000 CAD</div>
+    <div class="wf-list-item">📅 Démarré : jan. 2025</div>
+    <div class="wf-list-item"><span class="wf-badge wf-badge-ok">Actif</span></div>
+  </div>
+</div>
+</div>
+
+<!-- WF-06 PHOTOS GPS -->
+<div class="wf-page" id="wf-5">
+<div class="wf-title">WF-06 — Galerie photos GPS (Investisseur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Photo suspecte détectée — GPS hors zone. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Photos chantier</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-section-title">Photos — Jalon 2 (Murs RDC) <span style="font-size:12px;font-weight:400;color:#888">· 7 photos · <span style="color:#336633">6 authentiques</span> · <span style="color:#993333">1 suspecte</span></span></div>
+<div class="wf-card" style="margin-bottom:12px">
+  <div class="wf-card-head">Légende authenticité GPS · <span style="color:#336633">✓ Authentique (GPS dans zone 200m)</span> · <span style="color:#993333">✗ Suspecte (hors zone)</span></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+    <div style="border:1px solid #336633;border-radius:3px;overflow:hidden">
+      <div class="wf-placeholder-sm" style="background:#c8e8d0">📷 Photo 1</div>
+      <div style="padding:5px;font-size:10px;color:#333"><span style="color:#336633">✓ GPS 5.477°N</span><br/>9h14 · Mur nord</div>
+    </div>
+    <div style="border:1px solid #336633;border-radius:3px;overflow:hidden">
+      <div class="wf-placeholder-sm" style="background:#c8e8d0">📷 Photo 2</div>
+      <div style="padding:5px;font-size:10px;color:#333"><span style="color:#336633">✓ GPS 5.477°N</span><br/>9h32 · Mur sud</div>
+    </div>
+    <div style="border:1px solid #993333;border-radius:3px;overflow:hidden;background:#fff8f8">
+      <div class="wf-placeholder-sm" style="background:#f8d0d0">📷 Photo 3</div>
+      <div style="padding:5px;font-size:10px;color:#993333">✗ Hors zone (850m)<br/>GPS suspect</div>
+    </div>
+    <div style="border:1px solid #336633;border-radius:3px;overflow:hidden">
+      <div class="wf-placeholder-sm" style="background:#c8e8d0">📷 Photo 4</div>
+      <div style="padding:5px;font-size:10px;color:#333"><span style="color:#336633">✓ GPS 5.477°N</span><br/>10h01 · Vue générale</div>
+    </div>
+  </div>
+</div>
+<div class="wf-card">
+  <div class="wf-card-head">Détail de la photo sélectionnée</div>
+  <div class="wf-grid-2">
+    <div class="wf-placeholder-lg">Aperçu photo 1 — Mur nord</div>
+    <div>
+      <div class="wf-list-item">📍 Latitude : 5.4774°N</div>
+      <div class="wf-list-item">📍 Longitude : 10.4171°E</div>
+      <div class="wf-list-item">🕐 Horodatage : 2025-05-22 09h14 UTC</div>
+      <div class="wf-list-item">🔑 Hash SHA-256 : a3f9c2d8…b4e5</div>
+      <div class="wf-list-item">📏 Distance chantier : 43m <span style="color:#336633">✓ Dans zone</span></div>
+      <div class="wf-list-item">📷 Source : Caméra directe (galerie bloquée)</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-07 SÉQUESTRE -->
+<div class="wf-page" id="wf-6">
+<div class="wf-title">WF-07 — Gestion du séquestre</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Fonds déposés. Séquestre mis à jour. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Séquestre</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-section-title">Gestion du séquestre</div>
+<div class="wf-grid-4" style="margin-bottom:12px">
+  <div class="wf-kpi"><div class="wf-kpi-val">2 400 CAD</div><div class="wf-kpi-lbl">Total bloqué</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#336633">800 CAD</div><div class="wf-kpi-lbl">Total libéré</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">600 CAD</div><div class="wf-kpi-lbl">En attente validation</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val">2</div><div class="wf-kpi-lbl">Projets couverts</div></div>
+</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Déposer des fonds</div>
+    <div class="wf-field-row">
+      <div class="wf-field"><div class="wf-label">Montant</div><div class="wf-input">500 CAD</div></div>
+      <div class="wf-field"><div class="wf-label">Canal de paiement</div><div class="wf-input">Stripe ▼</div></div>
+    </div>
+    <div class="wf-field" style="margin-bottom:8px"><div class="wf-label">Projet concerné</div><div class="wf-input">Maison Bafoussam ▼</div></div>
+    <button class="wf-btn wf-btn-primary" style="width:100%">Déposer les fonds →</button>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Historique des paiements</div>
+    <table class="wf-table">
+      <thead><tr><th>Date</th><th>Jalon</th><th>Montant</th><th>Statut</th></tr></thead>
+      <tbody>
+        <tr><td>12 mars</td><td>Fondations</td><td>400 CAD</td><td><span class="wf-badge wf-badge-ok">Libéré</span></td></tr>
+        <tr><td>—</td><td>Murs RDC</td><td>600 CAD</td><td><span class="wf-badge wf-badge-warn">Attente</span></td></tr>
+        <tr><td>5 avr.</td><td>Dalle Yaounde</td><td>400 CAD</td><td><span class="wf-badge wf-badge-ok">Libéré</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- WF-08 APPEL VIDÉO -->
+<div class="wf-page" id="wf-7">
+<div class="wf-title">WF-08 — Appel vidéo surprise</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Appel lancé. Paul K. a 10 min pour répondre. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Appel vidéo</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-section-title">Appel vidéo surprise sur le chantier</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Déclencher un appel</div>
+    <div style="text-align:center;padding:14px 0">
+      <div class="wf-avatar" style="width:52px;height:52px;margin:0 auto 8px;font-size:16px;background:#dde8f5">PK</div>
+      <div style="font-size:13px;font-weight:600">Paul Kamga</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px">Chef de chantier · Bafoussam · <span style="color:#336633">Disponible</span></div>
+    </div>
+    <div style="border:1px dashed #aaa;height:120px;display:flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:10px;background:#f8f8f8">
+      [Aperçu vidéo temps réel — WebRTC]
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="wf-btn wf-btn-primary" style="flex:1">📹 Lancer l'appel surprise</button>
+      <button class="wf-btn" style="flex:1">📅 Planifier un appel</button>
+    </div>
+    <div style="font-size:10px;color:#888;margin-top:8px;text-align:center">3 refus consécutifs = alerte automatique sur le score de fiabilité</div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Historique des appels</div>
+    <table class="wf-table">
+      <thead><tr><th>Date</th><th>Durée</th><th>GPS confirmé</th><th>Statut</th></tr></thead>
+      <tbody>
+        <tr><td>18 avr.</td><td>12 min</td><td>✓ Oui</td><td><span class="wf-badge wf-badge-ok">Répondu</span></td></tr>
+        <tr><td>5 avr.</td><td>8 min</td><td>✓ Oui</td><td><span class="wf-badge wf-badge-ok">Répondu</span></td></tr>
+        <tr><td>22 mars</td><td>—</td><td>—</td><td><span class="wf-badge wf-badge-warn">Manqué</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- WF-09 LITIGE -->
+<div class="wf-page" id="wf-8">
+<div class="wf-title">WF-09 — Déclarer un litige</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Litige ouvert. Séquestre gelé. Médiateur assigné sous 24h. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Litige</div>
+  <div class="wf-h-user">David T. | Déconnexion</div>
+</div>
+<div class="wf-section-title">Déclarer un litige</div>
+<div class="wf-card" style="border:1px dashed #993333;max-width:580px">
+  <div class="wf-card-head" style="color:#993333">⚠ Attention — Le séquestre sera gelé immédiatement à l'ouverture du litige</div>
+  <div class="wf-field" style="margin-bottom:8px"><div class="wf-label">Projet concerné</div><div class="wf-input">Maison Bafoussam — Paul Kamga ▼</div></div>
+  <div class="wf-field" style="margin-bottom:8px">
+    <div class="wf-label">Type de problème</div>
+    <div class="wf-input">Photos non conformes ▼</div>
+  </div>
+  <div class="wf-field" style="margin-bottom:8px">
+    <div class="wf-label">Description détaillée</div>
+    <div class="wf-input" style="height:70px;color:#aaa">Décrivez le problème en détail...</div>
+  </div>
+  <div class="wf-field" style="margin-bottom:8px">
+    <div class="wf-label">Joindre des preuves (photos, messages)</div>
+    <div style="border:1px dashed #bbb;padding:12px;text-align:center;font-size:11px;color:#aaa;border-radius:2px">[Upload fichiers — JPG, PDF, PNG]</div>
+  </div>
+  <div style="background:#fce8c0;border:1px solid #996600;border-radius:3px;padding:8px;font-size:11px;color:#663300;margin-bottom:10px">
+    ℹ Un médiateur certifié (Ingénieur / Juriste / Expert BTP) sera assigné sous 24h.
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end">
+    <button class="wf-btn">Annuler</button>
+    <button class="wf-btn wf-btn-danger">Confirmer l'ouverture du litige</button>
+  </div>
+</div>
+</div>
+
+<!-- WF-10 DASHBOARD ENTREPRENEUR -->
+<div class="wf-page" id="wf-9">
+<div class="wf-title">WF-10 — Tableau de bord Entrepreneur</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Nouveau projet assigné. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Espace Entrepreneur</div>
+  <div class="wf-h-user">Paul Kamga | Entrepreneur | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Accueil</div>
+  <div class="wf-nav-item">Mes chantiers</div>
+  <div class="wf-nav-item">Jalons</div>
+  <div class="wf-nav-item">Photos GPS</div>
+  <div class="wf-nav-item">Matériaux</div>
+  <div class="wf-nav-item">Messages</div>
+</div>
+<div class="wf-section-title">Bonjour, Paul 👷</div>
+<div class="wf-grid-4" style="margin-bottom:14px">
+  <div class="wf-kpi"><div class="wf-kpi-val">3</div><div class="wf-kpi-lbl">Chantiers actifs</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">2</div><div class="wf-kpi-lbl">Jalons à soumettre</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#2a3a5e">780K FCFA</div><div class="wf-kpi-lbl">À recevoir</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#336633">4.9 ★</div><div class="wf-kpi-lbl">Score fiabilité</div></div>
+</div>
+<div class="wf-main-sidebar">
+  <div>
+    <div class="wf-section-sub">Mes chantiers actifs</div>
+    <table class="wf-table">
+      <thead><tr><th>Projet</th><th>Investisseur</th><th>Avancement</th><th>Statut</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Maison Bafoussam</td><td>David T. (Montréal)</td><td><div class="wf-progress-bar"><div class="wf-progress-fill" style="width:38%"></div></div>38%</td><td><span class="wf-badge wf-badge-warn">Jalon à soumettre</span></td><td><button class="wf-btn wf-btn-primary" style="font-size:10px;padding:2px 8px">Soumettre →</button></td></tr>
+        <tr><td>Boutique Yaoundé</td><td>Marc A. (Lyon)</td><td><div class="wf-progress-bar"><div class="wf-progress-fill" style="width:71%"></div></div>71%</td><td><span class="wf-badge wf-badge-ok">En cours</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 8px">Voir →</button></td></tr>
+        <tr><td>Villa Buea</td><td>Sophie M. (Paris)</td><td><div class="wf-progress-bar"><div class="wf-progress-fill" style="width:65%"></div></div>65%</td><td><span class="wf-badge wf-badge-ok">En cours</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 8px">Voir →</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="wf-sidebar">
+    <div class="wf-card-head">Mon profil</div>
+    <div class="wf-list-item">🏗️ Spécialité : Gros œuvre</div>
+    <div class="wf-list-item">📍 Ville : Bafoussam</div>
+    <div class="wf-list-item">✅ Compte vérifié</div>
+    <div class="wf-list-item">📱 MoMo : 6XX XXX XXX</div>
+  </div>
+</div>
+</div>
+
+<!-- WF-11 SOUMETTRE JALON -->
+<div class="wf-page" id="wf-10">
+<div class="wf-title">WF-11 — Soumettre un jalon (Entrepreneur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Jalon soumis. En attente de validation investisseur. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Soumettre jalon</div>
+  <div class="wf-h-user">Paul Kamga | Déconnexion</div>
+</div>
+<div class="wf-section-title">Soumettre le Jalon 2 — Murs RDC</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Informations du jalon</div>
+    <div class="wf-list-item">📋 Projet : Maison Bafoussam</div>
+    <div class="wf-list-item">💰 Montant : 600 CAD</div>
+    <div class="wf-list-item">📌 Description attendue : Murs RDC montés</div>
+    <div class="wf-field" style="margin:8px 0"><div class="wf-label">Commentaire pour l'investisseur</div><div class="wf-input" style="height:60px;color:#aaa">Ex : Les murs sont terminés, conformes au plan...</div></div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Photos GPS jointes (7) <span style="font-size:10px;color:#336633">✓ Toutes authentiques</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+      <div class="wf-placeholder-sm" style="background:#c8e8d0;font-size:9px">📷 09h14 ✓</div>
+      <div class="wf-placeholder-sm" style="background:#c8e8d0;font-size:9px">📷 09h32 ✓</div>
+      <div class="wf-placeholder-sm" style="background:#c8e8d0;font-size:9px">📷 10h01 ✓</div>
+    </div>
+    <div class="wf-section-sub">Matériaux utilisés</div>
+    <div class="wf-list-item">🧱 Ciment CPA — 40 sacs — CIMENCAM</div>
+    <div class="wf-list-item">⚙️ Fer béton — 2T — SOREPCO</div>
+  </div>
+</div>
+<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+  <button class="wf-btn">Annuler</button>
+  <button class="wf-btn wf-btn-primary">Soumettre le jalon pour validation →</button>
+</div>
+</div>
+
+<!-- WF-12 PHOTO GPS ENTREPRENEUR -->
+<div class="wf-page" id="wf-11">
+<div class="wf-title">WF-12 — Ajouter photo GPS (Entrepreneur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Photo enregistrée. GPS validé dans la zone. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Photo de chantier</div>
+  <div class="wf-h-user">Paul Kamga | Déconnexion</div>
+</div>
+<div class="wf-section-title">Ajouter une photo de preuve GPS</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">🔒 Capture caméra directe (galerie désactivée)</div>
+    <div style="border:2px dashed #336633;border-radius:3px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;background:#f8fff8">
+      <div style="font-size:24px">📷</div>
+      <div style="font-size:12px;color:#555">Aperçu caméra en direct</div>
+      <div style="font-size:10px;color:#336633">📍 GPS actif : 5.4774°N · 10.4171°E · ±3m</div>
+    </div>
+    <div style="background:#e8f5e8;border:1px solid #336633;border-radius:3px;padding:8px;font-size:10px;color:#333;margin-bottom:8px">
+      <div>📍 GPS : 5.4774°N, 10.4171°E</div>
+      <div>🕐 Heure : 2025-05-22 09:14:33 UTC</div>
+      <div>📡 Zone chantier : validée (rayon 200m)</div>
+      <div>🔑 Hash SHA-256 : calculé après capture</div>
+    </div>
+    <div class="wf-field" style="margin-bottom:8px"><div class="wf-label">Jalon concerné</div><div class="wf-input">Jalon 2 — Murs RDC ▼</div></div>
+    <div class="wf-field" style="margin-bottom:8px"><div class="wf-label">Description (optionnel)</div><div class="wf-input">Ex : Vue mur nord, mi-hauteur</div></div>
+    <button class="wf-btn wf-btn-primary" style="width:100%">📷 Prendre la photo et soumettre</button>
+    <div style="font-size:10px;color:#993333;text-align:center;margin-top:6px">La galerie photo est désactivée pour cette fonctionnalité</div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Photos soumises aujourd'hui (3)</div>
+    <div class="wf-list-item"><span style="color:#336633">✓</span> Photo 1 — 09h14 · Mur nord · 43m du chantier</div>
+    <div class="wf-list-item"><span style="color:#336633">✓</span> Photo 2 — 09h32 · Mur sud · 51m du chantier</div>
+    <div class="wf-list-item"><span style="color:#336633">✓</span> Photo 3 — 10h01 · Vue générale · 38m du chantier</div>
+  </div>
+</div>
+</div>
+
+<!-- WF-13 COMMANDER MATÉRIAUX -->
+<div class="wf-page" id="wf-12">
+<div class="wf-title">WF-13 — Commander matériaux</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Commande passée. Facture QR générée. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Matériaux</div>
+  <div class="wf-h-user">Paul Kamga | Déconnexion</div>
+</div>
+<div class="wf-section-title">Commander des matériaux</div>
+<div class="wf-grid-2">
+  <div>
+    <div class="wf-card" style="margin-bottom:10px">
+      <div class="wf-card-head">Fournisseurs certifiés disponibles</div>
+      <table class="wf-table">
+        <thead><tr><th>Fournisseur</th><th>Domaine</th><th>Ville</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr><td><input type="radio" name="f"/> CIMENCAM</td><td>Ciment</td><td>Bafoussam</td><td><span class="wf-badge wf-badge-ok">Certifié</span></td></tr>
+          <tr><td><input type="radio" name="f"/> SOREPCO</td><td>Fer à béton</td><td>Douala</td><td><span class="wf-badge wf-badge-ok">Certifié</span></td></tr>
+          <tr><td><input type="radio" name="f"/> Nguepi BTP</td><td>Parpaings</td><td>Bafoussam</td><td><span class="wf-badge wf-badge-info">Partenaire</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-head">Détail de la commande</div>
+      <div class="wf-field-row">
+        <div class="wf-field"><div class="wf-label">Matériau</div><div class="wf-input">Ciment CPA 42.5 ▼</div></div>
+        <div class="wf-field"><div class="wf-label">Quantité</div><div class="wf-input">40</div></div>
+        <div class="wf-field"><div class="wf-label">Unité</div><div class="wf-input">Sacs ▼</div></div>
+      </div>
+      <div class="wf-field-row">
+        <div class="wf-field"><div class="wf-label">Prix total estimé</div><div class="wf-input">52 000 FCFA</div></div>
+        <div class="wf-field"><div class="wf-label">Projet lié</div><div class="wf-input">Maison Bafoussam ▼</div></div>
+      </div>
+      <button class="wf-btn wf-btn-primary" style="width:100%">Commander et générer facture QR →</button>
+    </div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Inventaire matériaux — Maison Bafoussam</div>
+    <table class="wf-table">
+      <thead><tr><th>Matériau</th><th>Qté</th><th>Prix</th><th>Facture</th></tr></thead>
+      <tbody>
+        <tr><td>Ciment CPA 42.5</td><td>40 sacs</td><td>52 000</td><td><span class="wf-badge wf-badge-ok">QR ✓</span></td></tr>
+        <tr><td>Fer béton 10mm</td><td>2T</td><td>180 000</td><td><span class="wf-badge wf-badge-ok">QR ✓</span></td></tr>
+        <tr><td>Sable de rivière</td><td>5m³</td><td>25 000</td><td><span class="wf-badge wf-badge-ok">QR ✓</span></td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:#888;margin-top:6px">Total tracé : 257 000 FCFA · Toutes factures vérifiées</div>
+  </div>
+</div>
+</div>
+
+<!-- WF-14 MESSAGERIE -->
+<div class="wf-page" id="wf-13">
+<div class="wf-title">WF-14 — Messagerie interne</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Message envoyé. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Messages</div>
+  <div class="wf-h-user">Paul Kamga | Déconnexion</div>
+</div>
+<div class="wf-section-title">Messagerie — Maison Bafoussam</div>
+<div style="display:grid;grid-template-columns:220px 1fr;gap:10px;height:380px">
+  <div class="wf-sidebar" style="overflow-y:auto">
+    <div class="wf-card-head">Conversations</div>
+    <div class="wf-list-item" style="background:#e8edf8;border-radius:2px;padding:6px 4px">
+      <div class="wf-avatar">DT</div>
+      <div><div style="font-size:11px;font-weight:600">David T.</div><div style="font-size:10px;color:#888">Investisseur · 3 non lus</div></div>
+    </div>
+    <div class="wf-list-item" style="padding:6px 4px">
+      <div class="wf-avatar">MA</div>
+      <div><div style="font-size:11px">Marc A.</div><div style="font-size:10px;color:#888">Investisseur</div></div>
+    </div>
+    <div class="wf-list-item" style="padding:6px 4px">
+      <div class="wf-avatar" style="background:#e8f5e8">ADM</div>
+      <div><div style="font-size:11px">Support</div><div style="font-size:10px;color:#888">Diaspo-Chantier</div></div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;border:1px solid #ccc;border-radius:3px">
+    <div style="padding:8px 12px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:8px">
+      <div class="wf-avatar">DT</div>
+      <div><div style="font-size:12px;font-weight:600">David Tchamba</div><div style="font-size:10px;color:#336633">En ligne</div></div>
+      <button class="wf-btn" style="margin-left:auto;font-size:10px">📹 Appel vidéo</button>
+    </div>
+    <div style="flex:1;padding:10px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:9px;color:#aaa;text-align:center">Aujourd'hui 9h10</div>
+      <div class="wf-chat-bubble">Bonjour David ! Les murs du RDC sont terminés. J'ai soumis 7 photos GPS validées.</div>
+      <div class="wf-chat-bubble right">Bonjour Paul, je vérifie les photos et valide dans la journée.</div>
+      <div class="wf-chat-bubble">Merci ! Pour les matériaux du R+1, j'ai besoin de 60 sacs ciment. Voici le devis CIMENCAM. [Devis.pdf]</div>
+    </div>
+    <div class="wf-chat-input">
+      <div class="wf-input" style="flex:1;color:#aaa">Écrire un message...</div>
+      <button class="wf-btn">📎</button>
+      <button class="wf-btn wf-btn-primary">Envoyer →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-15 CATALOGUE FOURNISSEUR -->
+<div class="wf-page" id="wf-14">
+<div class="wf-title">WF-15 — Catalogue matériaux (Fournisseur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Produit ajouté au catalogue. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — CIMENCAM</div>
+  <div class="wf-h-user">CIMENCAM | Fournisseur | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Catalogue</div>
+  <div class="wf-nav-item">Commandes</div>
+  <div class="wf-nav-item">Statistiques</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div class="wf-section-title">Mon catalogue de matériaux</div>
+  <button class="wf-btn wf-btn-primary">+ Ajouter un produit</button>
+</div>
+<div class="wf-card" style="margin-bottom:10px">
+  <div class="wf-card-head">Ajouter / Modifier un produit</div>
+  <div class="wf-field-row">
+    <div class="wf-field"><div class="wf-label">Désignation</div><div class="wf-input">Ciment CPA 42.5</div></div>
+    <div class="wf-field"><div class="wf-label">Catégorie</div><div class="wf-input">Ciment ▼</div></div>
+    <div class="wf-field"><div class="wf-label">Prix unitaire (FCFA)</div><div class="wf-input">1 300</div></div>
+    <div class="wf-field"><div class="wf-label">Unité</div><div class="wf-input">Sac 50kg ▼</div></div>
+  </div>
+  <div class="wf-field-row">
+    <div class="wf-field"><div class="wf-label">Stock disponible</div><div class="wf-input">2 400</div></div>
+    <div class="wf-field"><div class="wf-label">Ville de livraison</div><div class="wf-input">Bafoussam ▼</div></div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+    <button class="wf-btn">Annuler</button>
+    <button class="wf-btn wf-btn-primary">Enregistrer →</button>
+  </div>
+</div>
+<table class="wf-table">
+  <thead><tr><th>Produit</th><th>Catégorie</th><th>Prix unit.</th><th>Stock</th><th>Certifié</th><th>Actions</th></tr></thead>
+  <tbody>
+    <tr><td>Ciment CPA 42.5</td><td>Ciment</td><td>1 300 FCFA/sac</td><td>2 400 sacs</td><td><span class="wf-badge wf-badge-ok">Oui</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 6px">Modifier</button></td></tr>
+    <tr><td>Ciment CPJ 32.5</td><td>Ciment</td><td>1 100 FCFA/sac</td><td>1 800 sacs</td><td><span class="wf-badge wf-badge-ok">Oui</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 6px">Modifier</button></td></tr>
+    <tr><td>Ciment Blanc</td><td>Ciment</td><td>2 200 FCFA/sac</td><td>400 sacs</td><td><span class="wf-badge wf-badge-ok">Oui</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 6px">Modifier</button></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- WF-16 GESTION COMMANDES FOURNISSEUR -->
+<div class="wf-page" id="wf-15">
+<div class="wf-title">WF-16 — Gestion commandes (Fournisseur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Livraison confirmée. Facture QR générée. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Commandes reçues</div>
+  <div class="wf-h-user">CIMENCAM | Fournisseur | Déconnexion</div>
+</div>
+<div class="wf-section-title">Commandes reçues</div>
+<div class="wf-grid-2">
+  <div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="wf-btn wf-btn-primary">Toutes (8)</button>
+      <button class="wf-btn">En cours (3)</button>
+      <button class="wf-btn">Livrées (5)</button>
+    </div>
+    <table class="wf-table">
+      <thead><tr><th>Réf.</th><th>Entrepreneur</th><th>Produit</th><th>Qté</th><th>Statut</th></tr></thead>
+      <tbody>
+        <tr style="background:#e8edf8"><td>CMD-001</td><td>Paul Kamga</td><td>Ciment CPA</td><td>40 sacs</td><td><span class="wf-badge wf-badge-warn">En cours</span></td></tr>
+        <tr><td>CMD-002</td><td>Jean Nkolo</td><td>Ciment CPJ</td><td>80 sacs</td><td><span class="wf-badge wf-badge-ok">Livré</span></td></tr>
+        <tr><td>CMD-003</td><td>Éric Biya</td><td>Ciment CPA</td><td>120 sacs</td><td><span class="wf-badge wf-badge-info">Programmé</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">CMD-001 — Paul Kamga <span class="wf-badge wf-badge-warn">En cours</span></div>
+    <div class="wf-list-item">📦 Produit : Ciment CPA 42.5 · 40 sacs</div>
+    <div class="wf-list-item">💰 Montant : 52 000 FCFA</div>
+    <div class="wf-list-item">📅 Commande : 18 avr. 2025</div>
+    <div class="wf-list-item">📍 Livraison : Chantier Bafoussam</div>
+    <div class="wf-divider"></div>
+    <div class="wf-section-sub">Générer la facture QR</div>
+    <div style="border:1px dashed #aaa;padding:10px;text-align:center;border-radius:2px;margin-bottom:8px">
+      [QR Code — Hash SHA-256 · Vérifiable par l'investisseur]
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="wf-btn wf-btn-primary" style="flex:1">Confirmer livraison →</button>
+      <button class="wf-btn" style="flex:1">📥 Télécharger facture</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-17 LISTE LITIGES MÉDIATEUR -->
+<div class="wf-page" id="wf-16">
+<div class="wf-title">WF-17 — Liste litiges (Médiateur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Vous avez été assigné au litige LIT-003. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Médiateur</div>
+  <div class="wf-h-user">Pierre Eboumbou | Médiateur (Ingénieur civil) | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Litiges assignés</div>
+  <div class="wf-nav-item">Rapports soumis</div>
+  <div class="wf-nav-item">Mon profil</div>
+</div>
+<div class="wf-section-title">Mes litiges assignés</div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+  <button class="wf-btn wf-btn-primary">Tous (4)</button>
+  <button class="wf-btn">En cours (2)</button>
+  <button class="wf-btn">Résolus (2)</button>
+</div>
+<table class="wf-table">
+  <thead><tr><th>Réf.</th><th>Projet</th><th>Investisseur</th><th>Entrepreneur</th><th>Ouvert le</th><th>Statut</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr style="background:#e8edf8"><td>LIT-003</td><td>Maison Bafoussam</td><td>David T.</td><td>Paul Kamga</td><td>22 avr.</td><td><span class="wf-badge wf-badge-warn">En cours</span></td><td><button class="wf-btn wf-btn-primary" style="font-size:10px;padding:2px 8px">Traiter →</button></td></tr>
+    <tr><td>LIT-002</td><td>Boutique Yaoundé</td><td>Sophie M.</td><td>Jean N.</td><td>15 avr.</td><td><span class="wf-badge wf-badge-warn">En cours</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 8px">Voir →</button></td></tr>
+    <tr><td>LIT-001</td><td>Villa Douala</td><td>Marc A.</td><td>Éric B.</td><td>2 mars</td><td><span class="wf-badge wf-badge-ok">Résolu</span></td><td><button class="wf-btn" style="font-size:10px;padding:2px 8px">Voir →</button></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- WF-18 DÉTAIL LITIGE + DÉCISION -->
+<div class="wf-page" id="wf-17">
+<div class="wf-title">WF-18 — Détail litige + Décision (Médiateur)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — Succès : « Décision enregistrée. » | Échec : « Une erreur est survenue. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Médiateur</div>
+  <div class="wf-h-user">Pierre Eboumbou | Médiateur | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Litiges assignés</div>
+  <div class="wf-nav-item">Rapports soumis</div>
+</div>
+<div class="wf-section-title">LIT-003 — Maison Bafoussam <span class="wf-badge wf-badge-warn">En cours</span></div>
+<div class="wf-grid-2" style="gap:12px">
+  <div>
+    <div class="wf-card" style="margin-bottom:10px">
+      <div class="wf-card-head">Informations litige</div>
+      <div class="wf-list-item">Client : David Tchamba | david@email.com | +1 514 000</div>
+      <div class="wf-list-item">Entrepreneur : Paul Kamga | Bafoussam</div>
+      <div class="wf-list-item">Projet : #PRJ-0012 · Budget 2 000 CAD</div>
+      <div class="wf-list-item">Raison : Photos non conformes au chantier</div>
+      <div class="wf-list-item">Solution souhaitée : <strong>Remboursement partiel</strong></div>
+      <div class="wf-section-sub">Preuves jointes</div>
+      <div style="display:flex;gap:8px">
+        <div class="wf-placeholder-sm" style="width:60px">photo_1.jpg</div>
+        <div class="wf-placeholder-sm" style="width:60px">photo_2.jpg</div>
+      </div>
+      <div style="font-size:10px;color:#888;margin-top:6px">Soumis le 22 avr. 2025 · 08h42</div>
+    </div>
+    <div class="wf-card">
+      <div class="wf-card-head">Échanges avec les parties</div>
+      <div class="wf-chat-bubble">David T. — 22 avr. 09h14 : Les photos GPS montrent un emplacement à 850m du chantier.</div>
+      <div class="wf-chat-bubble right">Paul K. — 22 avr. 10h03 : C'était un problème de GPS ce jour-là.</div>
+      <div class="wf-chat-bubble" style="background:#e8edf8">Médiateur — 23 avr. 11h00 : J'ai analysé les métadonnées. Confirmation de l'anomalie.</div>
+      <div class="wf-chat-input">
+        <div class="wf-input" style="flex:1;color:#aaa">Écrire un message aux parties...</div>
+        <button class="wf-btn wf-btn-primary">Envoyer →</button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="wf-card">
+      <div class="wf-card-head">Décision &amp; résolution</div>
+      <div class="wf-field" style="margin-bottom:8px">
+        <div class="wf-label">Changer le statut</div>
+        <div class="wf-input">En cours ▼</div>
+      </div>
+      <div class="wf-field" style="margin-bottom:8px">
+        <div class="wf-label">Résolution</div>
+        <button class="wf-btn" style="width:100%;margin-bottom:6px;text-align:left">Approuver — Échange</button>
+        <button class="wf-btn" style="width:100%;margin-bottom:6px;text-align:left;background:#fce8c0">Approuver — Remboursement*</button>
+        <button class="wf-btn wf-btn-danger" style="width:100%;text-align:left">Rejeter le litige</button>
+        <div style="font-size:9px;color:#888;margin-top:4px">* Remboursement géré hors système</div>
+      </div>
+      <div class="wf-field" style="margin-bottom:10px">
+        <div class="wf-label">Rapport d'expertise (obligatoire)</div>
+        <div class="wf-input" style="height:70px;color:#aaa">Rédigez votre conclusion et recommandation...</div>
+      </div>
+      <button class="wf-btn wf-btn-primary" style="width:100%;background:#2a3a5e">Enregistrer la décision →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-19 DASHBOARD ADMIN -->
+<div class="wf-page" id="wf-18">
+<div class="wf-title">WF-19 — Dashboard Administrateur</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Compte approuvé. Email envoyé. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Administration</div>
+  <div class="wf-h-user">Admin : Marie Martin | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item active">Dashboard</div>
+  <div class="wf-nav-item">Utilisateurs</div>
+  <div class="wf-nav-item">Paiements</div>
+  <div class="wf-nav-item">Litiges</div>
+  <div class="wf-nav-item">Projets</div>
+</div>
+<div class="wf-section-title">Tableau de bord — Administration</div>
+<div class="wf-grid-4" style="margin-bottom:14px">
+  <div class="wf-kpi"><div class="wf-kpi-val">142</div><div class="wf-kpi-lbl">Projets actifs</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">4</div><div class="wf-kpi-lbl">Litiges ouverts</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#cc7700">3</div><div class="wf-kpi-lbl">Comptes à valider</div></div>
+  <div class="wf-kpi"><div class="wf-kpi-val" style="color:#2a3a5e">12.4M FCFA</div><div class="wf-kpi-lbl">En séquestre total</div></div>
+</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Alertes système</div>
+    <div class="wf-list-item" style="color:#993333">⚠ Photo suspecte détectée · Projet #4821</div>
+    <div class="wf-list-item" style="color:#cc7700">⏳ 3 entrepreneurs en attente de vérification</div>
+    <div class="wf-list-item" style="color:#993333">⚠ Litige LIT-003 sans médiateur assigné · 48h</div>
+    <div class="wf-list-item">ℹ 24 nouvelles inscriptions cette semaine</div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Actions rapides</div>
+    <button class="wf-btn wf-btn-primary" style="width:100%;margin-bottom:6px">Valider les comptes en attente (3)</button>
+    <button class="wf-btn" style="width:100%;margin-bottom:6px">Assigner médiateur · LIT-003</button>
+    <button class="wf-btn" style="width:100%;margin-bottom:6px">Consulter photo suspecte #4821</button>
+    <button class="wf-btn">Voir rapport hebdomadaire</button>
+  </div>
+</div>
+</div>
+
+<!-- WF-20 GESTION UTILISATEURS ADMIN -->
+<div class="wf-page" id="wf-19">
+<div class="wf-title">WF-20 — Gestion utilisateurs (Admin)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — Succès : « Compte activé. » | Échec : « Erreur de traitement. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Administration</div>
+  <div class="wf-h-user">Admin : Marie Martin | Déconnexion</div>
+</div>
+<div class="wf-nav">
+  <div class="wf-nav-item">Dashboard</div>
+  <div class="wf-nav-item active">Utilisateurs</div>
+  <div class="wf-nav-item">Paiements</div>
+  <div class="wf-nav-item">Litiges</div>
+</div>
+<div class="wf-section-title">Gestion des utilisateurs</div>
+<div style="display:flex;gap:8px;margin-bottom:10px">
+  <div class="wf-input" style="flex:1;max-width:300px">🔍 Rechercher un utilisateur...</div>
+  <button class="wf-btn wf-btn-primary">Tous (12)</button>
+  <button class="wf-btn">En attente (3)</button>
+  <button class="wf-btn">Actifs (7)</button>
+  <button class="wf-btn">Rejetés (2)</button>
+</div>
+<div class="wf-grid-2" style="gap:10px">
+  <div>
+    <table class="wf-table">
+      <thead><tr><th>Nom</th><th>Rôle</th><th>Date</th><th>Statut</th></tr></thead>
+      <tbody>
+        <tr style="background:#e8edf8"><td><strong>Alain Mbarga</strong></td><td>Entrepreneur</td><td>2 jours</td><td><span class="wf-badge wf-badge-warn">En attente</span></td></tr>
+        <tr><td>Christelle Ngo</td><td>Entrepreneur</td><td>1 jour</td><td><span class="wf-badge wf-badge-warn">En attente</span></td></tr>
+        <tr><td>David Tchamba</td><td>Investisseur</td><td>jan. 2025</td><td><span class="wf-badge wf-badge-ok">Actif</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Dossier — Alain Mbarga <span class="wf-badge wf-badge-warn">En attente</span></div>
+    <div class="wf-list-item">📧 alain.mbarga@email.com</div>
+    <div class="wf-list-item">📍 Douala, Cameroun</div>
+    <div class="wf-list-item">🏗️ Spécialité : Gros œuvre</div>
+    <div class="wf-divider"></div>
+    <div class="wf-section-sub">Documents soumis</div>
+    <div class="wf-list-item"><span class="wf-badge wf-badge-ok">✓</span> CNI · Validée</div>
+    <div class="wf-list-item"><span class="wf-badge wf-badge-ok">✓</span> Carte professionnelle · Validée</div>
+    <div class="wf-list-item"><span class="wf-badge wf-badge-warn">⏳</span> Vérification antécédents · En cours</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="wf-btn wf-btn-primary" style="flex:1">Approuver ✓</button>
+      <button class="wf-btn wf-btn-danger" style="flex:1">Rejeter ✗</button>
+    </div>
+    <div class="wf-field" style="margin-top:8px"><div class="wf-label">Motif du rejet (si applicable)</div><div class="wf-input">Motif...</div></div>
+  </div>
+</div>
+</div>
+
+<!-- WF-21 RAPPORT EXPERT -->
+<div class="wf-page" id="wf-20">
+<div class="wf-title">WF-21 — Rédiger rapport d'expertise (Expert technique)</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Rapport soumis au médiateur. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Expert technique</div>
+  <div class="wf-h-user">Ing. Pierre Eboumbou | Expert BTP | Déconnexion</div>
+</div>
+<div class="wf-section-title">Rapport d'expertise — LIT-003</div>
+<div class="wf-grid-2">
+  <div class="wf-card">
+    <div class="wf-card-head">Dossier litige à analyser</div>
+    <div class="wf-list-item">📋 Litige : LIT-003 · Maison Bafoussam</div>
+    <div class="wf-list-item">👤 Investisseur : David T. (Montréal)</div>
+    <div class="wf-list-item">👷 Entrepreneur : Paul Kamga (Bafoussam)</div>
+    <div class="wf-list-item">⚠ Problème : Photos GPS hors zone chantier</div>
+    <div class="wf-divider"></div>
+    <div class="wf-section-sub">Preuves disponibles</div>
+    <div class="wf-list-item">📷 7 photos soumises · 1 hors zone (850m)</div>
+    <div class="wf-list-item">📦 Inventaire matériaux · 3 factures QR</div>
+    <div class="wf-list-item">💬 Historique messages complet</div>
+    <div class="wf-list-item">📹 Historique appels vidéo</div>
+    <div class="wf-divider"></div>
+    <div class="wf-section-sub">Analyse GPS Hash SHA-256</div>
+    <div style="background:#f0f8f0;border:1px solid #ccc;padding:8px;font-size:10px;border-radius:2px">
+      Photo 3 : Hash a3f9c2d8… · GPS 5.843°N/10.871°E<br/>
+      Chantier GPS : 5.477°N/10.417°E<br/>
+      Distance calculée : 850m · <span style="color:#993333">⚠ Hors zone 200m</span>
+    </div>
+  </div>
+  <div class="wf-card">
+    <div class="wf-card-head">Rédiger le rapport d'expertise</div>
+    <div class="wf-field" style="margin-bottom:8px">
+      <div class="wf-label">Conclusion technique</div>
+      <div class="wf-input" style="height:90px;color:#333">La photo #3 présente des coordonnées GPS incohérentes avec la localisation du chantier. Distance calculée via formule Haversine : 850m. Les 6 autres photos sont conformes et authentiques...</div>
+    </div>
+    <div class="wf-field" style="margin-bottom:8px">
+      <div class="wf-label">Recommandation</div>
+      <div class="wf-input" style="height:70px;color:#333">Remboursement partiel du jalon 2 (50%) — Les travaux ont partiellement été réalisés mais la preuve photo est insuffisante...</div>
+    </div>
+    <div class="wf-field" style="margin-bottom:8px">
+      <div class="wf-label">Valider l'analyse technique</div>
+      <div style="display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #ccc;border-radius:2px">
+        <input type="checkbox" id="va"/>
+        <label for="va" style="font-size:11px">Je certifie que ce rapport est exact et impartial</label>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="wf-btn">Enregistrer brouillon</button>
+      <button class="wf-btn wf-btn-primary">Soumettre le rapport au médiateur →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- WF-22 NOTIFICATIONS -->
+<div class="wf-page" id="wf-21">
+<div class="wf-title">WF-22 — Centre de notifications</div>
+<div class="wf-status">[✓ / ✗] Bandeau — « Toutes les notifications marquées comme lues. »</div>
+<div class="wf-header">
+  <div class="wf-logo">LOGO</div>
+  <div class="wf-h-title">Diaspo-Chantier — Notifications</div>
+  <div class="wf-h-user">David T. | Investisseur | Déconnexion</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div class="wf-section-title">Notifications <span style="font-size:12px;font-weight:400;color:#888">(7 non lues)</span></div>
+  <button class="wf-btn" style="font-size:11px">Tout marquer comme lu</button>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+  <button class="wf-btn wf-btn-primary">Toutes (12)</button>
+  <button class="wf-btn">Non lues (7)</button>
+  <button class="wf-btn">Jalons</button>
+  <button class="wf-btn">Paiements</button>
+  <button class="wf-btn">Litiges</button>
+</div>
+<div class="wf-card">
+  <div class="wf-list-item" style="background:#f0f4ff;border-radius:2px;padding:8px;margin-bottom:4px">
+    <div style="width:10px;height:10px;border-radius:50%;background:#2a3a5e;flex-shrink:0;margin-top:2px"></div>
+    <div style="flex:1"><div style="font-size:12px;font-weight:600">Jalon 2 soumis par Paul Kamga</div><div style="font-size:11px;color:#555">Maison Bafoussam · 7 photos GPS jointes · Validez pour libérer 600 CAD</div><div style="font-size:10px;color:#888">il y a 2h · Email envoyé ✓</div></div>
+    <button class="wf-btn wf-btn-primary" style="font-size:10px;padding:3px 10px">Valider →</button>
+  </div>
+  <div class="wf-list-item" style="background:#f0f4ff;border-radius:2px;padding:8px;margin-bottom:4px">
+    <div style="width:10px;height:10px;border-radius:50%;background:#2a3a5e;flex-shrink:0;margin-top:2px"></div>
+    <div style="flex:1"><div style="font-size:12px;font-weight:600">Facture CIMENCAM vérifiée</div><div style="font-size:11px;color:#555">40 sacs ciment · 52 000 FCFA · QR code authentifié ✓</div><div style="font-size:10px;color:#888">il y a 4h · Push envoyé ✓</div></div>
+    <span class="wf-badge wf-badge-ok">Info</span>
+  </div>
+  <div class="wf-list-item" style="padding:8px;margin-bottom:4px">
+    <div style="width:10px;height:10px;border-radius:50%;background:#ddd;flex-shrink:0;margin-top:2px"></div>
+    <div style="flex:1"><div style="font-size:12px">Jalon 4 validé — Boutique Yaoundé</div><div style="font-size:11px;color:#888">400 CAD libérés vers Marc Ateba · MoMo</div><div style="font-size:10px;color:#aaa">hier · Email + SMS envoyés ✓</div></div>
+    <span class="wf-badge wf-badge-ok">Paiement</span>
+  </div>
+  <div class="wf-list-item" style="padding:8px">
+    <div style="width:10px;height:10px;border-radius:50%;background:#ddd;flex-shrink:0;margin-top:2px"></div>
+    <div style="flex:1"><div style="font-size:12px">Nouveau message de Paul Kamga</div><div style="font-size:11px;color:#888">«Voici le devis CIMENCAM pour les matériaux du R+1»</div><div style="font-size:10px;color:#aaa">avant-hier</div></div>
+    <button class="wf-btn" style="font-size:10px;padding:3px 10px">Répondre</button>
+  </div>
+</div>
+<div class="wf-card" style="margin-top:10px">
+  <div class="wf-card-head">Préférences de notification</div>
+  <table class="wf-table">
+    <thead><tr><th>Événement</th><th>Email</th><th>SMS</th><th>Push</th></tr></thead>
+    <tbody>
+      <tr><td>Jalon soumis</td><td><input type="checkbox" checked/></td><td><input type="checkbox" checked/></td><td><input type="checkbox" checked/></td></tr>
+      <tr><td>Paiement libéré</td><td><input type="checkbox" checked/></td><td><input type="checkbox"/></td><td><input type="checkbox" checked/></td></tr>
+      <tr><td>Nouveau message</td><td><input type="checkbox"/></td><td><input type="checkbox"/></td><td><input type="checkbox" checked/></td></tr>
+      <tr><td>Litige ouvert</td><td><input type="checkbox" checked/></td><td><input type="checkbox" checked/></td><td><input type="checkbox" checked/></td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+</div>
+
+<script>
+function wfShow(i){
+  document.querySelectorAll('.wf-page').forEach((p,j)=>{
+    p.classList.toggle('open',j===i);
+    p.style.display=j===i?'block':'none';
+  });
+  document.querySelectorAll('.wf-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+}
+document.querySelectorAll('.wf-page').forEach((p,j)=>{if(j>0){p.style.display='none';}});
+</script>

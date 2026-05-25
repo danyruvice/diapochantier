@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../DiaspoChantier.Seeder/DiaspoChantier.Seeder.csproj" Id="56c3c212-f0c9-4c7a-b772-cc4e730f0ce0" />
+  <Project Path="DiaspoChantier.csproj" />
+</Solution>

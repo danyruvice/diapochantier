@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0e1a" />
+    <title>@ViewData["Title"] - Diaspo-Chantier</title>
+    <link rel="icon" type="image/png" href="~/logo_diaspo-chantier.png">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+<div class="tp-wrap">
+
+        <div class="header-sticky">
+
+            <nav class="navbar">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <div class="brand-icon">
+                        <img src="~/logo_diaspo-chantier.png" alt="Logo Diaspo-Chantier">
+                    </div>
+                    <div class="brand-text">
+                        <div class="brand-name">Diaspo-Chantier</div>
+                        <div class="brand-by">by Mekouzou tech</div>
+                    </div>
+                </a>
+
+                <div class="search-wrap">
+                    <input type="text"
+                           placeholder="Chercher un entrepreneur, une ville, un projet..."
+                           aria-label="Rechercher" />
+                    <button class="search-btn" type="button" aria-label="Rechercher">
+                        <img src="~/loupe_recherche.jpg" alt="Rechercher" class="search-icon" style="width:16px;height:16px;object-fit:contain;display:block;flex-shrink:0;">
+                    </button>
+                </div>
+
+                <div class="nav-actions">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="nav-btn" asp-controller="Profil" asp-action="MonProfil">Mon compte</a>
+                        @if (User.IsInRole("Administrateur"))
+                        {
+                            <a class="nav-btn" asp-controller="Admin" asp-action="Index">Admin</a>
+                        }
+                        <a class="nav-btn" asp-controller="Auth" asp-action="Deconnexion">Déconnexion</a>
+                    }
+                    else
+                    {
+                        <a class="nav-btn" asp-controller="Auth" asp-action="Connexion">Connexion</a>
+                        <a class="nav-btn" asp-controller="Auth" asp-action="ChoisirTypeCompte">Créer un compte</a>
+                    }
+                    <a class="nav-btn" href="#alertes">Alertes</a>
+                    <a class="nav-btn" href="#messages">
+                        Messages <span class="badge">3</span>
+                    </a>
+                    <a class="nav-btn nav-btn-primary btn-cta-sm"
+                       asp-controller="Projet"
+                       asp-action="Creer">
+                        Nouveau projet
+                    </a>
+                </div>
+            </nav>
+
+            <div class="subnav" role="navigation" aria-label="Navigation principale">
+                <a class="subnav-link active" asp-controller="Home" asp-action="Index">Accueil</a>
+                <a class="subnav-link" href="#mes-projets">Mes projets</a>
+                <a class="subnav-link" href="#entrepreneurs">Entrepreneurs</a>
+                <a class="subnav-link" href="#fournisseurs">Fournisseurs certifiés</a>
+                <a class="subnav-link" href="#sequestre">Séquestre</a>
+                <a class="subnav-link" href="#jalons">Jalons</a>
+                <a class="subnav-link" href="#photos-gps">Photos GPS</a>
+                <a class="subnav-link" href="#support">Support</a>
+            </div>
+
+        </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="tp-main">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div>
+                <div class="footer-brand"><span><img src="~/logo_diaspo-chantier.png" alt="Logo Diaspo-Chantier"></span><span>Diaspo-Chantier</span></div>
+            <div class="footer-tagline">La plateforme de confiance entre la diaspora africaine et les entrepreneurs du bâtiment au Cameroun.</div>
+        </div>
+        <div>
+            <div class="footer-col-title">Plateforme</div>
+            <a class="footer-link" href="#comment-ca-marche">Comment ça marche</a>
+            <a class="footer-link" href="#creer-un-projet">Créer un projet</a>
+        </div>
+        <div>
+            <div class="footer-col-title">Sécurité</div>
+            <a class="footer-link" href="#photos-gps">Photos GPS anti-fraude</a>
+        </div>
+        <div>
+            <div class="footer-col-title">Support</div>
+            <a class="footer-link" href="#centre-aide">Centre d'aide</a>
+        </div>
+        <div>
+            <div class="footer-col-title">Légal</div>
+            <a class="footer-link" href="#mentions-legales">Mentions légales</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

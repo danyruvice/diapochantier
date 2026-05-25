@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Choisir un type de compte";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="auth-shell anim-fade-up">
+
+            <div class="auth-logo">
+                <img src="~/logo_diaspo-chantier.png" alt="Logo Diaspo-Chantier" />
+                <div class="auth-logo-name">Diaspo-Chantier</div>
+                <div class="auth-logo-sub">Créer votre compte</div>
+            </div>
+
+            <div class="choice-header">
+                <span class="badge bg-primary-subtle text-primary-emphasis">Nouveau compte</span>
+                <h1 class="h3 mt-3 mb-1">Choisissez votre parcours</h1>
+                <p class="text-muted mb-0">Créez votre compte en fonction de votre rôle sur la plateforme Diaspo-Chantier.</p>
+            </div>
+
+            <div class="role-grid">
+
+                <div class="role-card role-card--investor">
+                    <div class="role-card-tag">Investisseur</div>
+                    <h2 class="role-card-title">Suivre des projets et sécuriser les paiements</h2>
+                    <p class="role-card-desc">Créez vos projets de construction, suivez les jalons et pilotez le séquestre avec confiance depuis la diaspora.</p>
+                    <ul class="role-perks">
+                        <li>Tableau de bord en temps réel</li>
+                        <li>Validation des jalons par photos GPS</li>
+                        <li>Paiements sécurisés par séquestre</li>
+                    </ul>
+                    <a class="btn btn-primary" asp-action="InscriptionInvestisseur">Créer un compte investisseur</a>
+                </div>
+
+                <div class="role-divider" aria-hidden="true">ou</div>
+
+                <div class="role-card role-card--entrepreneur">
+                    <div class="role-card-tag role-card-tag--gold">Entrepreneur</div>
+                    <h2 class="role-card-title">Déposer des jalons et des preuves de chantier</h2>
+                    <p class="role-card-desc">Publiez vos avancées, joignez les photos GPS horodatées et préparez votre dossier de vérification BTP.</p>
+                    <ul class="role-perks">
+                        <li>Profil certifié BTP visible</li>
+                        <li>Dépôt de jalons et photos GPS</li>
+                        <li>Paiements via MTN MoMo</li>
+                    </ul>
+                    <a class="btn btn-outline-primary" asp-action="InscriptionEntrepreneur">Créer un compte entrepreneur</a>
+                </div>
+
+            </div>
+
+            <div class="mt-4 text-center">
+                <a asp-action="Connexion">Déjà un compte ? Se connecter</a>
+            </div>
+        </div>
+    </div>
+</div>

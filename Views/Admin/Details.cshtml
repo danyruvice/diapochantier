@@ -1,0 +1,69 @@
+@model VerificationDossierViewModel
+@{
+    ViewData["Title"] = "Dossier de validation";
+}
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="auth-shell">
+            <span class="badge bg-primary-subtle text-primary-emphasis">Validation</span>
+            <h1 class="h3 mt-3 mb-2">@Model.NomComplet</h1>
+            <p class="text-muted mb-4">Statut actuel : <strong>@Model.StatutActuel</strong></p>
+
+            <div class="mb-3"><strong>Email :</strong> @Model.Email</div>
+            <div class="mb-3"><strong>Téléphone :</strong> @Model.Telephone</div>
+            <div class="mb-3"><strong>Ville :</strong> @Model.Ville</div>
+            <div class="mb-3"><strong>Spécialité :</strong> @Model.Specialite</div>
+            <div class="mb-3"><strong>Date d’inscription :</strong> @Model.DateInscription.ToString("g")</div>
+
+            <h2 class="h5 mt-4">Documents soumis</h2>
+            <div class="row g-3 mt-2">
+                @foreach (var document in Model.Documents)
+                {
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <h3>@document.Type</h3>
+                            <p>@document.NomFichier</p>
+                            <p class="small text-muted">Statut : @document.Statut</p>
+                            <a class="btn btn-outline-primary" href="@document.UrlStockage" target="_blank" rel="noreferrer">Ouvrir</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="auth-shell">
+            <span class="badge bg-primary-subtle text-primary-emphasis">Décision</span>
+            <h2 class="h3 mt-3 mb-2">Valider ou rejeter le dossier</h2>
+            <p class="text-muted mb-4">Choisissez la décision administrative et ajoutez le motif si besoin.</p>
+
+            <form asp-action="Decision" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+                <input asp-for="IdEntrepreneur" type="hidden" />
+
+                <div class="mb-3">
+                    <label class="form-label">Décision</label>
+                    <select name="Decision" class="form-control">
+                        <option value="Approuver">Approuver</option>
+                        <option value="Rejeter">Rejeter</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Motif du rejet</label>
+                    <textarea name="MotifRejet" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Envoyer la décision</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

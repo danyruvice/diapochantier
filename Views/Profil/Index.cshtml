@@ -1,0 +1,228 @@
+@model GestionProfilViewModel
+@{
+    ViewData["Title"] = "Mon profil";
+}
+
+<div class="profil-grid anim-fade-up">
+
+    
+    <aside class="profil-card">
+
+        <div class="profil-avatar-wrap">
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoProfilUrlActuelle))
+            {
+                <img src="@Model.PhotoProfilUrlActuelle" alt="Photo de profil" class="profil-avatar" />
+            }
+            else
+            {
+                <div class="profil-avatar-initiale">@Model.Prenom.FirstOrDefault()</div>
+            }
+            <div class="profil-avatar-badge" title="Statut : @Model.StatutAffiche">
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                    <circle cx="5" cy="5" r="5"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="profil-identity">
+            <h1 class="profil-name">@Model.Prenom @Model.Nom</h1>
+            <span class="profil-role-tag">@Model.RoleAffiche</span>
+        </div>
+
+        <div class="profil-divider"></div>
+
+        <ul class="profil-info-list">
+            <li>
+                <span class="profil-info-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
+                <div>
+                    <div class="profil-info-label">Email</div>
+                    <div class="profil-info-value">@Model.Email</div>
+                </div>
+            </li>
+            @if (!string.IsNullOrWhiteSpace(Model.Telephone))
+            {
+                <li>
+                    <span class="profil-info-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.64 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.55 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6.55 6.55l1.6-1.6a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>
+                    <div>
+                        <div class="profil-info-label">Téléphone</div>
+                        <div class="profil-info-value">@Model.Telephone</div>
+                    </div>
+                </li>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Adresse))
+            {
+                <li>
+                    <span class="profil-info-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </span>
+                    <div>
+                        <div class="profil-info-label">Adresse</div>
+                        <div class="profil-info-value">@Model.Adresse</div>
+                    </div>
+                </li>
+            }
+            <li>
+                <span class="profil-info-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                <div>
+                    <div class="profil-info-label">Statut</div>
+                    <div class="profil-info-value">
+                        <span class="profil-statut-badge">@Model.StatutAffiche</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Specialite) || !string.IsNullOrWhiteSpace(Model.Ville))
+        {
+            <div class="profil-divider"></div>
+            <div class="profil-section-label">Profil entrepreneur</div>
+            <ul class="profil-info-list">
+                @if (!string.IsNullOrWhiteSpace(Model.Specialite))
+                {
+                    <li>
+                        <span class="profil-info-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                        </span>
+                        <div>
+                            <div class="profil-info-label">Spécialité</div>
+                            <div class="profil-info-value">@Model.Specialite</div>
+                        </div>
+                    </li>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Ville))
+                {
+                    <li>
+                        <span class="profil-info-icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </span>
+                        <div>
+                            <div class="profil-info-label">Ville</div>
+                            <div class="profil-info-value">@Model.Ville</div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+
+    </aside>
+
+    
+    <div class="profil-form-shell">
+
+        <div class="reg-header">
+            <span class="badge bg-primary-subtle text-primary-emphasis">Mise à jour</span>
+            <h2 class="h3 mt-3 mb-1">Mettre à jour mon profil</h2>
+            <p class="text-muted mb-0">Modifiez vos informations personnelles et vos coordonnées.</p>
+        </div>
+
+        @if (TempData["MessageReussite"] is string message)
+        {
+            <div class="alert alert-success">@message</div>
+        }
+
+        <form asp-action="MettreAJourProfil" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+
+            <div class="profil-form-layout">
+                <div class="profil-form-main">
+                    <div class="form-section">
+                        <div class="form-section-title">Identité</div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label asp-for="Prenom" class="form-label"></label>
+                                <input asp-for="Prenom" class="form-control" />
+                                <span asp-validation-for="Prenom" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Nom" class="form-label"></label>
+                                <input asp-for="Nom" class="form-control" />
+                                <span asp-validation-for="Nom" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Telephone" class="form-label"></label>
+                                <input asp-for="Telephone" class="form-control" placeholder="+33 6 XX XX XX XX" />
+                                <span asp-validation-for="Telephone" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Adresse" class="form-label"></label>
+                                <input asp-for="Adresse" class="form-control" placeholder="Votre adresse" />
+                                <span asp-validation-for="Adresse" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Profil entrepreneur <span class="form-section-opt">(si applicable)</span></div>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label asp-for="Specialite" class="form-label"></label>
+                                <input asp-for="Specialite" class="form-control" placeholder="Maçonnerie, Électricité..." />
+                                <span asp-validation-for="Specialite" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Ville" class="form-label"></label>
+                                <input asp-for="Ville" class="form-control" placeholder="Douala, Yaoundé..." />
+                                <span asp-validation-for="Ville" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="NumeroMoMo" class="form-label"></label>
+                                <input asp-for="NumeroMoMo" class="form-control" placeholder="6XX XXX XXX" />
+                                <span asp-validation-for="NumeroMoMo" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="profil-upload-panel">
+                    <div class="form-section">
+                        <div class="form-section-title">Photo de profil</div>
+                        <div class="upload-zone" id="zone-photo">
+                            <input asp-for="PhotoProfil" type="file" class="upload-input" accept=".jpg,.jpeg,.png,.webp" id="input-photo" />
+                            <label for="input-photo" class="upload-label">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <span class="upload-title">Changer la photo de profil</span>
+                                <span class="upload-hint">JPG, PNG ou WebP — max 5 Mo</span>
+                                <span class="upload-filename" id="name-photo"></span>
+                            </label>
+                            <span asp-validation-for="PhotoProfil" class="text-danger"></span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Enregistrer les modifications</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var input = document.getElementById('input-photo');
+        if (input) {
+            input.addEventListener('change', function () {
+                var nameEl = document.getElementById('name-photo');
+                var zone   = document.getElementById('zone-photo');
+                if (this.files && this.files[0]) {
+                    nameEl.textContent = this.files[0].name;
+                    zone.classList.add('upload-zone--filled');
+                } else {
+                    nameEl.textContent = '';
+                    zone.classList.remove('upload-zone--filled');
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,88 @@
+@model InscriptionInvestisseurViewModel
+@{
+    ViewData["Title"] = "Inscription investisseur";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-7">
+        <div class="auth-shell anim-fade-up">
+
+            <div class="reg-header">
+                <span class="badge bg-primary-subtle text-primary-emphasis">Investisseur</span>
+                <h1 class="h3 mt-3 mb-1">Créer votre compte investisseur</h1>
+                <p class="text-muted mb-0">Renseignez vos informations pour suivre vos projets et sécuriser les paiements de chantier.</p>
+            </div>
+
+            <form asp-action="InscriptionInvestisseur" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Identité</div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label asp-for="Prenom" class="form-label"></label>
+                            <input asp-for="Prenom" class="form-control" placeholder="Jean" />
+                            <span asp-validation-for="Prenom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Nom" class="form-label"></label>
+                            <input asp-for="Nom" class="form-control" placeholder="Mbarga" />
+                            <span asp-validation-for="Nom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="jean.mbarga@email.com" autocomplete="email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Telephone" class="form-label"></label>
+                            <input asp-for="Telephone" class="form-control" placeholder="+33 6 XX XX XX XX" />
+                            <span asp-validation-for="Telephone" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label asp-for="PaysResidence" class="form-label"></label>
+                            <input asp-for="PaysResidence" class="form-control" placeholder="France, Canada, Belgique..." />
+                            <span asp-validation-for="PaysResidence" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Sécurité du compte</div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label asp-for="MotDePasse" class="form-label"></label>
+                            <input asp-for="MotDePasse" class="form-control" placeholder="Min. 8 caractères" autocomplete="new-password" />
+                            <span asp-validation-for="MotDePasse" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmerMotDePasse" class="form-label"></label>
+                            <input asp-for="ConfirmerMotDePasse" class="form-control" placeholder="Répétez le mot de passe" autocomplete="new-password" />
+                            <span asp-validation-for="ConfirmerMotDePasse" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="AccepterConditions" class="form-check-input" />
+                    <label asp-for="AccepterConditions" class="form-check-label">
+                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                    </label>
+                    <span asp-validation-for="AccepterConditions" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Finaliser l'inscription</button>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a asp-action="ChoisirTypeCompte">Retour au choix du compte</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

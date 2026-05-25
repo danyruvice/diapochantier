@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Accueil";
+}
+
+<section class="hero-section">
+    <div class="hero-grid">
+
+        <div class="hero-text anim-fade-up">
+            <div class="eyebrow">Plateforme commerciale pour chantiers et investisseurs</div>
+            <h1 class="hero-title">
+                Gagnez en <span>confiance</span>, suivez vos projets et sécurisez vos paiements.
+            </h1>
+            <p class="hero-copy">
+                Diaspo-Chantier vous aide à structurer votre relation avec les entrepreneurs,
+                à vérifier les jalons et à piloter les dossiers avec une expérience claire et professionnelle.
+            </p>
+            <div class="cta-row">
+                <a class="btn btn-modern-primary" asp-controller="Auth" asp-action="ChoisirTypeCompte">Créer un compte</a>
+                <a class="btn btn-modern-secondary" asp-controller="Auth" asp-action="Connexion">Me connecter</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <strong>24 / 7</strong>
+                    <span>Suivi des alertes et échanges</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>100%</strong>
+                    <span>Traçabilité des jalons validés</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>3 rôles</strong>
+                    <span>Investisseurs, entrepreneurs et partenaires</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual anim-fade-in anim-delay-2">
+            <div class="carousel-card">
+                <div class="carousel-stage">
+                    <div class="carousel-track">
+                        <div class="carousel-slide is-active">
+                            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80" alt="Chantier sécurisé" />
+                            <div class="carousel-overlay">
+                                <span class="carousel-badge">Suivi chantier</span>
+                                <p>Confirmez les jalons et sécurisez la progression du projet.</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=80" alt="Outils de pilotage" />
+                            <div class="carousel-overlay">
+                                <span class="carousel-badge">Pilotage clair</span>
+                                <p>Centralisez les documents, échanges et validations.</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=900&q=80" alt="Suivi projet" />
+                            <div class="carousel-overlay">
+                                <span class="carousel-badge">Confiance commerciale</span>
+                                <p>Offrez à vos partenaires une expérience professionnelle.</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="~/logo_diaspo-chantier.png" alt="Logo Diaspo-Chantier" />
+                            <div class="carousel-overlay">
+                                <span class="carousel-badge">Marque Diaspo-Chantier</span>
+                                <p>Le logo officiel de votre plateforme de confiance pour les projets de construction.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-controls">
+                    <div class="carousel-dots">
+                        <button class="carousel-dot active" type="button" aria-label="Diapositive 1"></button>
+                        <button class="carousel-dot" type="button" aria-label="Diapositive 2"></button>
+                        <button class="carousel-dot" type="button" aria-label="Diapositive 3"></button>
+                        <button class="carousel-dot" type="button" aria-label="Diapositive 4"></button>
+                    </div>
+                    <div class="carousel-btns">
+                        <button class="carousel-btn" type="button" aria-label="Précédent">&#8249;</button>
+                        <button class="carousel-btn" type="button" aria-label="Suivant">&#8250;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-panel mt-4 reveal" id="avantages">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Pourquoi choisir Diaspo-Chantier</p>
+            <h2 class="section-title">Une solution pensée pour la conversion, la clarté et le suivi.</h2>
+            <p class="section-copy">
+                Chaque partie du parcours a été simplifiée pour offrir une expérience fiable
+                aux utilisateurs qui ont besoin de rapidité, de transparence et de sécurité.
+            </p>
+        </div>
+        <div class="section-header-action">
+            <a class="btn btn-modern-secondary" asp-controller="Auth" asp-action="ChoisirTypeCompte">Démarrer maintenant</a>
+        </div>
+    </div>
+    <div class="metric-grid mt-3">
+        <div class="metric-card">
+            <strong>Vérification rapide</strong>
+            <span>Profils, documents et parcours d'inscription adaptés à chaque rôle.</span>
+        </div>
+        <div class="metric-card">
+            <strong>Communication fluide</strong>
+            <span>Suivi des échanges et des validations pour créer du rythme dans les projets.</span>
+        </div>
+        <div class="metric-card">
+            <strong>Confiance commerciale</strong>
+            <span>Une expérience plus professionnelle pour attirer et fidéliser vos partenaires.</span>
+        </div>
+    </div>
+</section>
+
+<section class="mt-4 reveal">
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">01</div>
+            <p class="eyebrow">Inscription claire</p>
+            <h3>Choisissez votre rôle</h3>
+            <p>Un parcours simple pour créer votre compte en quelques minutes.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">02</div>
+            <p class="eyebrow">Suivi des dossiers</p>
+            <h3>Visibilité sur chaque étape</h3>
+            <p>Centralisez les jalons, les documents et la communication autour du projet.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-number">03</div>
+            <p class="eyebrow">Décision plus rapide</p>
+            <h3>Confiance et efficacité</h3>
+            <p>Donnez à vos partenaires une expérience fiable et facile à comprendre.</p>
+        </div>
+    </div>
+</section>
+
+<section class="support-banner mt-4 reveal" id="support">
+    <div class="support-content">
+        <p class="eyebrow">Support &amp; accompagnement</p>
+        <h2 class="section-title">Une plateforme prête à être commercialisée</h2>
+        <p class="section-copy">
+            Un rendu cohérent, lisible et utilisable immédiatement, avec une structure
+            qui met en avant les bénéfices métier.
+        </p>
+    </div>
+    <div class="support-action">
+        <a class="btn btn-modern-primary" asp-controller="Auth" asp-action="Connexion">Parler au support</a>
+    </div>
+</section>

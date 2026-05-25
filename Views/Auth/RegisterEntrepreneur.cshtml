@@ -1,0 +1,181 @@
+@model InscriptionEntrepreneurViewModel
+@{
+    ViewData["Title"] = "Inscription entrepreneur";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-8">
+        <div class="auth-shell anim-fade-up">
+
+            <div class="reg-header">
+                <span class="badge bg-primary-subtle text-primary-emphasis">Entrepreneur</span>
+                <h1 class="h3 mt-3 mb-1">Créer votre compte entrepreneur</h1>
+                <p class="text-muted mb-0">Déposez vos informations et vos documents pour démarrer votre parcours de validation.</p>
+            </div>
+
+            <form asp-action="InscriptionEntrepreneur" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Identité</div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label asp-for="Prenom" class="form-label"></label>
+                            <input asp-for="Prenom" class="form-control" placeholder="Jean" />
+                            <span asp-validation-for="Prenom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Nom" class="form-label"></label>
+                            <input asp-for="Nom" class="form-control" placeholder="Mbarga" />
+                            <span asp-validation-for="Nom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" placeholder="jean.mbarga@email.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Telephone" class="form-label"></label>
+                            <input asp-for="Telephone" class="form-control" placeholder="+237 6XX XXX XXX" />
+                            <span asp-validation-for="Telephone" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Profil professionnel</div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label asp-for="Ville" class="form-label"></label>
+                            <input asp-for="Ville" class="form-control" placeholder="Douala, Yaoundé..." />
+                            <span asp-validation-for="Ville" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Specialite" class="form-label"></label>
+                            <input asp-for="Specialite" class="form-control" placeholder="Maçonnerie, Électricité..." />
+                            <span asp-validation-for="Specialite" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"
+                                      placeholder="Décrivez votre expérience, vos réalisations, votre zone d'intervention..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NumeroMoMo" class="form-label"></label>
+                            <input asp-for="NumeroMoMo" class="form-control" placeholder="6XX XXX XXX" />
+                            <span asp-validation-for="NumeroMoMo" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Documents justificatifs</div>
+                    <p class="form-section-hint">Formats acceptés : PDF, JPG, PNG — max 5 Mo par fichier</p>
+                    <div class="upload-grid">
+
+                        <div class="upload-zone" id="zone-cni">
+                            <input asp-for="FichierCNI" type="file" class="upload-input" accept=".pdf,.jpg,.jpeg,.png" id="input-cni" />
+                            <label for="input-cni" class="upload-label">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                                    <circle cx="8.5" cy="10.5" r="1.5" />
+                                    <path d="M14 10h4M14 14h4M5 14l3-3 2 2 3-3 3 3" />
+                                </svg>
+                                <span class="upload-title">Carte Nationale d'Identité</span>
+                                <span class="upload-hint">Cliquez ou glissez votre fichier ici</span>
+                                <span class="upload-filename" id="name-cni"></span>
+                            </label>
+                            <span asp-validation-for="FichierCNI" class="text-danger"></span>
+                        </div>
+
+                        <div class="upload-zone" id="zone-carte-pro">
+                            <input asp-for="FichierCartePro" type="file" class="upload-input" accept=".pdf,.jpg,.jpeg,.png" id="input-carte-pro" />
+                            <label for="input-carte-pro" class="upload-label">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="9" y1="13" x2="15" y2="13" />
+                                    <line x1="9" y1="17" x2="13" y2="17" />
+                                </svg>
+                                <span class="upload-title">Carte professionnelle BTP</span>
+                                <span class="upload-hint">Cliquez ou glissez votre fichier ici</span>
+                                <span class="upload-filename" id="name-carte-pro"></span>
+                            </label>
+                            <span asp-validation-for="FichierCartePro" class="text-danger"></span>
+                        </div>
+
+                        <div class="upload-zone upload-optional" id="zone-portfolio">
+                            <input asp-for="FichierPortfolio" type="file" class="upload-input" accept=".pdf,.jpg,.jpeg,.png" id="input-portfolio" />
+                            <label for="input-portfolio" class="upload-label">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" />
+                                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                                    <line x1="12" y1="12" x2="12" y2="16" />
+                                    <line x1="10" y1="14" x2="14" y2="14" />
+                                </svg>
+                                <span class="upload-title">Portfolio / Références <em>(optionnel)</em></span>
+                                <span class="upload-hint">Cliquez ou glissez votre fichier ici</span>
+                                <span class="upload-filename" id="name-portfolio"></span>
+                            </label>
+                            <span asp-validation-for="FichierPortfolio" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Sécurité du compte</div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label asp-for="MotDePasse" class="form-label"></label>
+                            <input asp-for="MotDePasse" class="form-control" placeholder="Min. 8 caractères" />
+                            <span asp-validation-for="MotDePasse" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmerMotDePasse" class="form-label"></label>
+                            <input asp-for="ConfirmerMotDePasse" class="form-control" placeholder="Répétez le mot de passe" />
+                            <span asp-validation-for="ConfirmerMotDePasse" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="AccepterConditions" class="form-check-input" />
+                    <label asp-for="AccepterConditions" class="form-check-label">
+                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                    </label>
+                    <span asp-validation-for="AccepterConditions" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Finaliser l'inscription</button>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a asp-action="ChoisirTypeCompte">Retour au choix du compte</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Preview nom du fichier dans chaque zone d'upload
+        document.querySelectorAll('.upload-input').forEach(function(input) {
+            input.addEventListener('change', function() {
+                var nameEl = document.getElementById('name-' + this.id.replace('input-', ''));
+                var zone   = document.getElementById('zone-' + this.id.replace('input-', ''));
+                if (this.files && this.files[0]) {
+                    nameEl.textContent = this.files[0].name;
+                    zone.classList.add('upload-zone--filled');
+                } else {
+                    nameEl.textContent = '';
+                    zone.classList.remove('upload-zone--filled');
+                }
+            });
+        });
+    </script>
+}

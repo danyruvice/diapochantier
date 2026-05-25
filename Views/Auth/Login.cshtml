@@ -1,0 +1,61 @@
+@model ConnexionViewModel
+@{
+    ViewData["Title"] = "Connexion";
+}
+
+<div class="row justify-content-center">
+    <div class="col-xl-6 col-lg-7">
+        <div class="auth-shell">
+            <div class="auth-brand">
+                <img src="~/logo_diaspo-chantier.png" alt="Logo Diaspo-Chantier" />
+                <span class="badge bg-primary-subtle text-primary-emphasis">Bienvenue</span>
+                <h2>Connexion à DiaspoChantier</h2>
+                <p>Accédez à votre tableau de bord, vos projets et vos documents en toute sécurité.</p>
+            </div>
+
+            @if (TempData["MessageReussite"] is string message)
+            {
+                <div class="alert alert-success">@message</div>
+            }
+
+            @if (TempData["MessageErreur"] is string erreur)
+            {
+                <div class="alert alert-danger">@erreur</div>
+            }
+
+            <form asp-action="Connexion" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" placeholder="ex: contact@diaspochantier.cm" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MotDePasse" class="form-label"></label>
+                    <input asp-for="MotDePasse" class="form-control" />
+                    <span asp-validation-for="MotDePasse" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="SesouveniDeMoi" class="form-check-input" />
+                    <label asp-for="SesouveniDeMoi" class="form-check-label"></label>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">Se connecter</button>
+                </div>
+            </form>
+
+            <div class="mt-4 d-flex justify-content-between flex-wrap gap-2">
+                <a asp-action="MotDePasseOublie">Mot de passe oublié ?</a>
+                <a asp-action="ChoisirTypeCompte">Créer un compte</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
