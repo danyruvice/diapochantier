@@ -28,6 +28,10 @@ namespace DiaspoChantier.ViewModels
         [Display(Name = "Pays de résidence")]
         public string PaysResidence { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La pièce d'identité est obligatoire.")]
+        [Display(Name = "Pièce d'identité (PDF ou image)")]
+        public IFormFile? FichierPieceIdentite { get; set; }
+
         [Required(ErrorMessage = "Le mot de passe est obligatoire.")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Le mot de passe doit comporter au moins 8 caractères.")]
         [DataType(DataType.Password)]

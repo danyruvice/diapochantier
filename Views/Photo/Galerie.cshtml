@@ -1,0 +1,81 @@
+@model DiaspoChantier.ViewModels.DetailProjetViewModel
+
+@{
+    ViewData["Title"] = $"Galerie photos - {Model.Titre}";
+}
+
+<section class="section-panel mb-4">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Galerie photos</p>
+            <h1 class="section-title mb-1">@Model.Titre</h1>
+            <p class="section-copy mb-0">Toutes les prises de vue vérifiées et suspectes du projet sont regroupées ici pour audit.</p>
+        </div>
+        <div class="section-header-action">
+            <a class="btn btn-modern-secondary" asp-controller="Projet" asp-action="Details" asp-route-id="@Model.IdProjet">Retour au projet</a>
+        </div>
+    </div>
+</section>
+
+@if (Model.Photos.Count == 0)
+{
+    <div class="alert alert-info">Aucune photo n’a encore été capturée pour ce projet.</div>
+}
+else
+{
+    <div class="photo-gps-gallery">
+        @foreach (var photo in Model.Photos)
+        {
+            <article class="photo-gps-card" role="button" tabindex="0" data-photo-modal
+                 data-url="@photo.Url"
+                 data-jalon="@photo.JalonTitre"
+                 data-horodatage="@photo.Horodatage"
+                 data-lat="@photo.Latitude"
+                 data-lon="@photo.Longitude"
+                 data-alt="@photo.Altitude"
+                 data-distance="@photo.Distance"
+                 data-statut="@photo.StatutTexte"
+                 data-hash="@photo.HashSHA256"
+                 data-source="@photo.Source">
+                <img src="@photo.Url" alt="Photo de chantier @photo.JalonTitre" />
+                <div class="photo-gps-card-body">
+                    <div class="photo-gps-badge @(photo.EstAuthentique ? "is-valid" : "is-warning")">@photo.StatutTexte</div>
+                    <p class="section-copy mb-1"><strong>Jalon :</strong> @photo.JalonTitre</p>
+                    <p class="section-copy mb-1"><strong>Horodatage :</strong> @photo.Horodatage</p>
+                    <p class="section-copy mb-1"><strong>Distance :</strong> @photo.Distance</p>
+                    <p class="section-copy mb-1"><strong>Coordonnées :</strong> @photo.Latitude, @photo.Longitude</p>
+                    <p class="section-copy mb-0"><strong>Source :</strong> @photo.Source</p>
+                </div>
+            </article>
+        }
+    </div>
+
+    <dialog id="photo-detail-modal" class="photo-detail-modal">
+        <div class="photo-detail-modal-inner">
+            <button type="button" class="btn btn-sm btn-modern-secondary" data-close-modal>Fermer</button>
+            <img id="photo-detail-img" src="" alt="Détail photo" style="max-width:100%;margin-top:1rem;" />
+            <div id="photo-detail-meta" class="mt-3"></div>
+        </div>
+    </dialog>
+}
+
+@section Scripts {
+<script>
+document.querySelectorAll('[data-photo-modal]').forEach(card => {
+    card.addEventListener('click', () => {
+        const modal = document.getElementById('photo-detail-modal');
+        document.getElementById('photo-detail-img').src = card.dataset.url;
+        document.getElementById('photo-detail-meta').innerHTML = `
+            <p><strong>Statut :</strong> ${card.dataset.statut}</p>
+            <p><strong>Jalon :</strong> ${card.dataset.jalon}</p>
+            <p><strong>Horodatage :</strong> ${card.dataset.horodatage}</p>
+            <p><strong>GPS :</strong> ${card.dataset.lat}, ${card.dataset.lon} (alt. ${card.dataset.alt || 'n/a'})</p>
+            <p><strong>Distance :</strong> ${card.dataset.distance}</p>
+            <p><strong>Hash SHA-256 :</strong> <code>${card.dataset.hash}</code></p>
+            <p><strong>Source :</strong> ${card.dataset.source}</p>`;
+        modal.showModal();
+    });
+});
+document.querySelector('[data-close-modal]')?.addEventListener('click', () => document.getElementById('photo-detail-modal').close());
+</script>
+}

@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Dossier rejeté";
+    var dateResoumission = ViewBag.DateResoumission as DateTime?;
+}
+
+<section class="section-panel" style="max-width:640px;margin:2rem auto;">
+    <p class="eyebrow">Décision administrateur</p>
+    <h1 class="section-title">Votre dossier a été rejeté</h1>
+    <p class="section-copy">
+        @if (dateResoumission.HasValue && dateResoumission > DateTime.UtcNow)
+        {
+            <text>Vous pourrez soumettre un nouveau dossier à partir du @dateResoumission.Value.ToString("dd/MM/yyyy").</text>
+        }
+        else
+        {
+            <text>Vous pouvez soumettre un nouveau dossier avec des documents à jour.</text>
+        }
+    </p>
+    @if (!dateResoumission.HasValue || dateResoumission <= DateTime.UtcNow)
+    {
+        <a class="btn btn-modern-primary mt-3" asp-controller="Auth" asp-action="InscriptionEntrepreneur">Soumettre un nouveau dossier</a>
+    }
+    <a class="btn btn-modern-secondary mt-3 ms-2" asp-controller="Auth" asp-action="Deconnexion">Se déconnecter</a>
+</section>

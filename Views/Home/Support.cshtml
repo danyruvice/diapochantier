@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Support";
+}
+
+<section class="section-panel" style="max-width:720px;margin:2rem auto;">
+    <p class="eyebrow">Centre d'aide</p>
+    <h1 class="section-title">Support Diaspo-Chantier</h1>
+    <p class="section-copy">
+        Notre équipe est disponible 7j/7 pour vous accompagner sur les projets, les paiements séquestre et la vérification des dossiers.
+    </p>
+    <div class="metric-grid mt-3">
+        <div class="metric-card">
+            <strong>Email</strong>
+            <span>support@diaspo-chantier.com</span>
+        </div>
+        <div class="metric-card">
+            <strong>Zones</strong>
+            <span>Douala · Montréal</span>
+        </div>
+    </div>
+    @if (User.Identity?.IsAuthenticated != true)
+    {
+        <a class="btn btn-modern-primary mt-4" asp-controller="Auth" asp-action="Connexion">Se connecter pour ouvrir un ticket</a>
+    }
+    else
+    {
+        <p class="section-copy mt-4">Vous êtes connecté. Décrivez votre problème depuis la page du projet concerné ou contactez-nous par email.</p>
+    }
+</section>

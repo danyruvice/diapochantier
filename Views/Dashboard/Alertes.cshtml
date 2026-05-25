@@ -1,0 +1,34 @@
+@model DiaspoChantier.ViewModels.AlertesViewModel
+@{
+    ViewData["Title"] = "Alertes";
+}
+
+<section class="section-panel">
+    <p class="eyebrow">Notifications</p>
+    <h1 class="section-title mb-3">Vos alertes</h1>
+
+    <div class="metric-grid">
+        <div class="metric-card">
+            <strong>@Model.JalonsAValider</strong>
+            <span>Jalons à traiter</span>
+            <a class="btn btn-modern-secondary btn-sm mt-2" asp-controller="Projet" asp-action="Index" asp-fragment="jalons">Voir les jalons</a>
+        </div>
+        <div class="metric-card">
+            <strong>@Model.PhotosSuspectes</strong>
+            <span>Photos suspectes</span>
+            <a class="btn btn-modern-secondary btn-sm mt-2" asp-controller="Projet" asp-action="Index" asp-fragment="photos">Voir les photos GPS</a>
+        </div>
+        <div class="metric-card">
+            <strong>@Model.InvitationsEnAttente</strong>
+            <span>Invitations en attente</span>
+            @if (User.IsInRole(nameof(DiaspoChantier.Enums.RoleUtilisateur.Entrepreneur)))
+            {
+                <a class="btn btn-modern-secondary btn-sm mt-2" asp-controller="Entrepreneur" asp-action="Invitations">Mes invitations</a>
+            }
+            else
+            {
+                <a class="btn btn-modern-secondary btn-sm mt-2" asp-controller="Entrepreneur" asp-action="Index">Entrepreneurs</a>
+            }
+        </div>
+    </div>
+</section>

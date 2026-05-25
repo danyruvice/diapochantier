@@ -16,9 +16,12 @@
             <h1 class="section-title mb-0">Mes projets</h1>
             <p class="section-copy mb-0">Créez, suivez et relancez vos chantiers avec un tableau de bord simple et lisible.</p>
         </div>
-        <div class="section-header-action">
-            <a class="btn btn-modern-primary" asp-controller="Projet" asp-action="Creer">Nouveau projet</a>
-        </div>
+        @if (!Model.EstEntrepreneur)
+        {
+            <div class="section-header-action">
+                <a class="btn btn-modern-primary" asp-controller="Projet" asp-action="Creer">Nouveau projet</a>
+            </div>
+        }
     </div>
 
     <div class="metric-grid mt-3">
@@ -48,7 +51,14 @@
     @if (Model.Projets.Count == 0)
     {
         <div class="alert alert-success">
-            Aucun projet pour le moment. Lancez votre premier projet depuis le bouton <strong>"Nouveau projet"</strong>.
+            @if (Model.EstEntrepreneur)
+            {
+                <text>Aucun chantier assigné. Acceptez une invitation pour commencer.</text>
+            }
+            else
+            {
+                <text>Aucun projet pour le moment. Lancez votre premier projet depuis le bouton <strong>Nouveau projet</strong>.</text>
+            }
         </div>
     }
     else
@@ -87,6 +97,7 @@
 
                     <div class="project-footer-actions">
                         <a class="btn btn-primary" asp-controller="Projet" asp-action="Details" asp-route-id="@projet.IdProjet">Voir le projet</a>
+                        <a class="btn btn-modern-secondary" asp-controller="Photo" asp-action="Galerie" asp-route-projetId="@projet.IdProjet">Photos GPS</a>
                     </div>
                 </article>
             }

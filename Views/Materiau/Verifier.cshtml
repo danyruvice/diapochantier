@@ -1,0 +1,19 @@
+@model DiaspoChantier.Models.Materiau?
+@{ ViewData["Title"] = "Vérification facture"; var valide = (bool)(ViewBag.Valide ?? false); }
+
+<section class="section-panel" style="max-width:560px;margin:2rem auto;text-align:center;">
+    @if (Model is null)
+    {
+        <h1 class="section-title text-danger">Facture non reconnue</h1>
+    }
+    else if (valide)
+    {
+        <h1 class="section-title text-success">Facture authentique ✓</h1>
+        <p>@Model.Designation — @Model.PrixTotal.ToString("N0") FCFA</p>
+        <p class="text-muted">Hash : @Model.HashSHA256</p>
+    }
+    else
+    {
+        <h1 class="section-title text-danger">Facture modifiée ou invalide</h1>
+    }
+</section>

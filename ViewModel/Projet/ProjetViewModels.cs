@@ -35,7 +35,6 @@ public class ModeleCreationProjet
 
 public class ModeleJalonProjet
 {
-    [Required(ErrorMessage = "Le titre du jalon est obligatoire.")]
     [StringLength(150, ErrorMessage = "Le titre du jalon ne doit pas dépasser 150 caractères.")]
     public string Titre { get; set; } = string.Empty;
 
@@ -51,6 +50,7 @@ public class ModeleJalonProjet
 
 public class TableauBordProjetViewModel
 {
+    public bool EstEntrepreneur { get; set; }
     public int TotalProjets { get; set; }
     public int ProjetsActifs { get; set; }
     public int JalonsEnAttente { get; set; }
@@ -74,6 +74,7 @@ public class ElementProjetViewModel
 
 public class DetailProjetViewModel
 {
+    public bool PeutValiderJalons { get; set; }
     public int IdProjet { get; set; }
     public string Titre { get; set; } = string.Empty;
     public string TypeProjet { get; set; } = string.Empty;
@@ -98,18 +99,24 @@ public class DetailJalonViewModel
     public DateTime? DateLimite { get; set; }
     public bool EstValide { get; set; }
     public DateTime? DateValidation { get; set; }
+    public bool PeutValider { get; set; }
+    public List<PhotoProjetViewModel> Photos { get; set; } = new();
 }
 
 public class PhotoProjetViewModel
 {
+    public int IdPhoto { get; set; }
+    public int IdJalon { get; set; }
+    public string JalonTitre { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
     public string NomFichier { get; set; } = string.Empty;
     public string Horodatage { get; set; } = string.Empty;
     public string Latitude { get; set; } = string.Empty;
     public string Longitude { get; set; } = string.Empty;
+    public string? Altitude { get; set; }
     public string Distance { get; set; } = string.Empty;
     public bool EstAuthentique { get; set; }
-    public string StatutTexte => EstAuthentique ? "Authentique" : "À vérifier";
+    public string StatutTexte => EstAuthentique ? "Authentique" : "Suspecte";
     public string Source { get; set; } = "Caméra mobile";
     public string HashSHA256 { get; set; } = string.Empty;
 }

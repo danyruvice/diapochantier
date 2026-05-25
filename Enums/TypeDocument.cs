@@ -5,6 +5,7 @@ namespace DiaspoChantier.Enums
         CNI,
         CarteProfessionnelle,
         Portfolio,
+        PieceIdentite,
         Diplome,
         Autre
     }

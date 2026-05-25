@@ -16,6 +16,16 @@ namespace DiaspoChantier.Controllers
             return View("Index");
         }
 
+        public IActionResult CommentCaMarche()
+        {
+            return Redirect("/Home/Index#avantages");
+        }
+
+        public IActionResult Support()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return Confidentialite();

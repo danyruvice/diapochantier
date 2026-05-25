@@ -1,4 +1,5 @@
-﻿using DiaspoChantier.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using DiaspoChantier.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace DiaspoChantier.Models
@@ -29,6 +30,14 @@ namespace DiaspoChantier.Models
 
         public DateTime DateInscription { get; set; } = DateTime.UtcNow;
         public DateTime? DerniereConnexion { get; set; }
+
+        [StringLength(500)]
+        public string? PieceIdentiteUrl { get; set; }
+
+        [StringLength(64)]
+        public string? PieceIdentiteHashSha256 { get; set; }
+
+        public DateTime? DateDernierRejet { get; set; }
 
         public Entrepreneur? ProfilEntrepreneur { get; set; }
     }

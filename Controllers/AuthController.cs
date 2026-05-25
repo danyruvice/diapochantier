@@ -41,7 +41,7 @@ namespace DiaspoChantier.Controllers
             var resultat = await _serviceAuthentification.ConnexionAsync(modele);
             if (!resultat.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Adresse email ou mot de passe incorrect.");
+                ModelState.AddModelError(string.Empty, resultat.MessageErreur ?? "Adresse email ou mot de passe incorrect.");
                 return View("Login", modele);
             }
 
@@ -60,16 +60,44 @@ namespace DiaspoChantier.Controllers
             var resultat = await _serviceAuthentification.ConnexionAsync(modele);
             if (!resultat.Succeeded)
             {
-                return Unauthorized(new { message = "Adresse email ou mot de passe incorrect." });
+                return Unauthorized(new { message = resultat.MessageErreur ?? "Adresse email ou mot de passe incorrect." });
             }
 
-            var jeton = await _serviceAuthentification.GenererJetonConnexionAsync(modele.Email);
-            if (string.IsNullOrWhiteSpace(jeton))
+            var jetons = await _serviceAuthentification.GenererJetonConnexionAsync(modele.Email);
+            if (jetons is null)
             {
                 return Unauthorized(new { message = "Impossible de générer le jeton d'authentification." });
             }
 
-            return Ok(new { jeton });
+            return Ok(new
+            {
+                jeton = jetons.AccessToken,
+                refreshToken = jetons.RefreshToken,
+                expireMinutes = jetons.ExpireMinutes
+            });
+        }
+
+        [HttpPost("rafraichir-jeton")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RafraichirJeton([FromBody] RafraichirJetonViewModel modele)
+        {
+            if (string.IsNullOrWhiteSpace(modele.RefreshToken))
+            {
+                return BadRequest(new { message = "Le refresh token est requis." });
+            }
+
+            var jetons = await _serviceAuthentification.RafraichirJetonAsync(modele.RefreshToken);
+            if (jetons is null)
+            {
+                return Unauthorized(new { message = "Refresh token invalide ou expiré." });
+            }
+
+            return Ok(new
+            {
+                jeton = jetons.AccessToken,
+                refreshToken = jetons.RefreshToken,
+                expireMinutes = jetons.ExpireMinutes
+            });
         }
 
         [HttpGet]
@@ -139,8 +167,8 @@ namespace DiaspoChantier.Controllers
                 return View("RegisterEntrepreneur", modele);
             }
 
-            TempData["MessageReussite"] = "Votre compte entrepreneur a bien été créé et votre dossier est en attente de vérification.";
-            return await RedirigerVersTableauDeBordAsync();
+            TempData["MessageReussite"] = "Votre dossier a été soumis. Connectez-vous après validation par un administrateur (email de confirmation envoyé).";
+            return RedirectToAction(nameof(Connexion));
         }
 
         [HttpGet]
@@ -160,14 +188,8 @@ namespace DiaspoChantier.Controllers
                 return View("ForgotPassword", modele);
             }
 
-            var succes = await _serviceAuthentification.DemanderReinitialisationMotDePasseAsync(modele.Email);
-            if (!succes)
-            {
-                ModelState.AddModelError(string.Empty, "Aucun compte ne correspond à cette adresse email.");
-                return View("ForgotPassword", modele);
-            }
-
-            TempData["MessageReussite"] = "Si cet email existe, un lien de réinitialisation a été généré.";
+            await _serviceAuthentification.DemanderReinitialisationMotDePasseAsync(modele.Email);
+            TempData["MessageReussite"] = "Si cette adresse email est enregistrée, un lien de réinitialisation vous a été envoyé (valide 1 heure).";
             return RedirectToAction(nameof(Connexion));
         }
 
@@ -221,12 +243,53 @@ namespace DiaspoChantier.Controllers
             return RedirectToAction("Accueil", "Home");
         }
 
+        [HttpGet]
+        [Authorize]
+        public IActionResult CompteEnAttente()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> CompteRejete()
+        {
+            var utilisateur = await _userManager.GetUserAsync(User);
+            ViewBag.DateResoumission = utilisateur?.DateDernierRejet?.AddDays(30);
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult CompteDesactive()
+        {
+            return View();
+        }
+
         private async Task<IActionResult> RedirigerVersTableauDeBordAsync()
         {
             var utilisateur = await _userManager.GetUserAsync(User);
             if (utilisateur is null)
             {
                 return RedirectToAction("Accueil", "Home");
+            }
+
+            if (utilisateur.Statut == StatutCompte.Suspendu)
+            {
+                return RedirectToAction(nameof(CompteDesactive));
+            }
+
+            if (utilisateur.Role == RoleUtilisateur.Entrepreneur)
+            {
+                if (utilisateur.Statut == StatutCompte.AttenteVerification)
+                {
+                    return RedirectToAction(nameof(CompteEnAttente));
+                }
+
+                if (utilisateur.Statut == StatutCompte.Rejete)
+                {
+                    return RedirectToAction(nameof(CompteRejete));
+                }
             }
 
             if (utilisateur.Role == RoleUtilisateur.Administrateur)

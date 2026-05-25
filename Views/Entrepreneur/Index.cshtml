@@ -1,0 +1,82 @@
+@model DiaspoChantier.ViewModels.RechercheEntrepreneurViewModel
+
+@{
+    ViewData["Title"] = "Trouver un entrepreneur";
+}
+
+<section class="section-panel">
+    <div class="mb-4">
+        <p class="eyebrow">Sprint 2</p>
+        <h1 class="section-title mb-1">Rechercher et contacter un entrepreneur</h1>
+        <p class="section-copy mb-0">Trouvez un entrepreneur fiable, consultez son profil public et lancez une invitation vers un projet en cours.</p>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MessageSucces))
+    {
+        <div class="alert alert-success mb-3">@Model.MessageSucces</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.MessageErreur))
+    {
+        <div class="alert alert-danger mb-3">@Model.MessageErreur</div>
+    }
+
+    <form asp-action="Index" method="get" class="mb-4">
+        <div class="form-row-2 align-items-end">
+            <div class="form-group">
+                <label class="form-label" for="recherche">Recherche</label>
+                <input id="recherche" name="recherche" class="form-control" value="@Model.Recherche" placeholder="Nom, spécialité, ville ou mots-clés" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-modern-primary">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Entrepreneurs.Count == 0)
+    {
+        <div class="alert alert-success">Aucun entrepreneur ne correspond à votre recherche pour le moment.</div>
+    }
+    else
+    {
+        <div class="project-list">
+            @foreach (var entrepreneur in Model.Entrepreneurs)
+            {
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <div>
+                            <p class="eyebrow mb-1">@entrepreneur.Specialite</p>
+                            <h2 class="section-title mb-1">@entrepreneur.NomComplet</h2>
+                            <p class="section-copy mb-0">@entrepreneur.Ville · Score @entrepreneur.ScoreFilabilite.ToString("0.0")/5 · @entrepreneur.NbAvis avis (@entrepreneur.NoteMoyenne.ToString("0.0")/5)</p>
+                        </div>
+                        <div class="dashboard-hero-actions">
+                            <a class="btn btn-modern-secondary" asp-action="Details" asp-route-id="@entrepreneur.IdEntrepreneur">Voir le profil</a>
+                        </div>
+                    </div>
+                    <div class="project-stats-grid mt-3">
+                        <div>
+                            <p class="project-stat-label">Projets terminés</p>
+                            <strong>@entrepreneur.NbProjetsTermines</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Fiabilité</p>
+                            <strong>@entrepreneur.ScoreFilabilite.ToString("0.0") / 5</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">MoMo</p>
+                            <strong>@(string.IsNullOrWhiteSpace(entrepreneur.NumeroMoMo) ? "À renseigner" : entrepreneur.NumeroMoMo)</strong>
+                        </div>
+                        <div>
+                            <p class="project-stat-label">Ville</p>
+                            <strong>@entrepreneur.Ville</strong>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(entrepreneur.Description))
+                    {
+                        <p class="section-copy mt-3 mb-0">@entrepreneur.Description</p>
+                    }
+                </article>
+            }
+        </div>
+    }
+</section>

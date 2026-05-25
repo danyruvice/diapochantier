@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Compte en attente";
+}
+
+<section class="section-panel" style="max-width:640px;margin:2rem auto;">
+    <p class="eyebrow">Vérification en cours</p>
+    <h1 class="section-title">Votre dossier est en attente de validation</h1>
+    <p class="section-copy">
+        Un administrateur Diaspo-Chantier examine votre CNI, carte professionnelle et portfolio.
+        Vous recevrez un email dès que votre compte sera approuvé ou rejeté.
+    </p>
+    <a class="btn btn-modern-secondary mt-3" asp-controller="Profil" asp-action="MonProfil">Voir mon profil</a>
+    <a class="btn btn-modern-primary mt-3 ms-2" asp-controller="Auth" asp-action="Deconnexion">Se déconnecter</a>
+</section>

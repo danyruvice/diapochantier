@@ -1,0 +1,136 @@
+@model DiaspoChantier.ViewModels.InvestisseurDashboardViewModel
+
+@{
+    ViewData["Title"] = "Tableau de bord investisseur";
+}
+
+<section class="dashboard-shell">
+    <section class="section-panel dashboard-hero">
+        <div class="dashboard-hero-top">
+            <div>
+                <p class="eyebrow">Dashboard investisseur</p>
+                <h1 class="section-title mb-1">@Model.BonjourMessage</h1>
+                <p class="section-copy mb-0">Suivez vos projets, les jalons à relancer et les invitations envoyées aux entrepreneurs.</p>
+            </div>
+            <div class="dashboard-hero-actions">
+                <a class="btn btn-modern-primary" asp-controller="Projet" asp-action="Creer">Créer un projet</a>
+                <a class="btn btn-modern-secondary" asp-controller="Entrepreneur" asp-action="Index">Trouver un entrepreneur</a>
+            </div>
+        </div>
+
+        <div class="metric-grid mt-3">
+            <div class="metric-card">
+                <strong>@Model.ProjetsActifs</strong>
+                <span>Chantiers actifs</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.JalonsEnAttente</strong>
+                <span>Jalons à suivre</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.TotalSequestre.ToString("N0") FCFA</strong>
+                <span>Total séquestre (bloqué)</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.BudgetSousGestion.ToString("N0") FCFA</strong>
+                <span>Budget sous gestion</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="dashboard-layout">
+        <section class="section-panel">
+            <div class="section-header mb-3">
+                <div>
+                    <p class="eyebrow">Aperçu projet</p>
+                    <h2 class="section-title mb-0">Mes projets actifs</h2>
+                </div>
+            </div>
+
+            @if (Model.Projets.Count == 0)
+            {
+                <div class="alert alert-success">Aucun chantier actif pour le moment. Créez votre premier projet pour démarrer le suivi.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Projet</th>
+                                <th>Entrepreneur</th>
+                                <th>Avancement</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var projet in Model.Projets)
+                            {
+                                <tr>
+                                    <td>@projet.Titre</td>
+                                    <td>@projet.Investisseur</td>
+                                    <td><div class="progress-pill"><span>@projet.ProgressPourcentage%</span></div></td>
+                                    <td>@projet.Statut</td>
+                                    <td><a class="btn btn-modern-secondary" asp-controller="Projet" asp-action="Details" asp-route-id="@projet.IdProjet">Voir</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <aside class="section-panel">
+            <p class="eyebrow">Cohérence Sprint 2</p>
+            <h2 class="section-title mb-3">Aperçu rapide</h2>
+            <div class="profil-stack">
+                <div>
+                    <div class="profil-info-label">Entrepreneurs référencés</div>
+                    <div class="profil-info-value">@Model.EntrepreneursActifs</div>
+                </div>
+                <div>
+                    <div class="profil-info-label">Invitations récentes</div>
+                    <div class="profil-info-value">@Model.Invitations.Count</div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a class="btn btn-modern-secondary" asp-controller="Entrepreneur" asp-action="Index">Explorer les profils</a>
+            </div>
+        </aside>
+    </div>
+
+    <section class="section-panel">
+        <div class="section-header mb-3">
+            <div>
+                <p class="eyebrow">Communication</p>
+                <h2 class="section-title mb-0">Invitations envoyées</h2>
+            </div>
+        </div>
+
+        @if (Model.Invitations.Count == 0)
+        {
+            <div class="alert alert-success">Aucune invitation envoyée pour le moment.</div>
+        }
+        else
+        {
+            <div class="dashboard-message-list">
+                @foreach (var invitation in Model.Invitations)
+                {
+                    <article class="dashboard-message-card">
+                        <div>
+                            <p class="eyebrow mb-1">@invitation.ProjetTitre</p>
+                            <h3 class="mb-2">@invitation.EntrepreneurNom</h3>
+                            <p class="section-copy mb-0">@invitation.Message</p>
+                        </div>
+                        <div>
+                            <span class="badge">@invitation.Statut</span>
+                            <p class="section-copy mb-0 mt-2">@invitation.DateCreation.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</section>

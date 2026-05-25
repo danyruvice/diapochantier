@@ -18,12 +18,16 @@ public class ProjetController : Controller
     private readonly ApplicationDbContext _contexte;
     private readonly UserManager<Utilisateur> _gestionnaireUtilisateurs;
     private readonly ServiceStockage _serviceStockage;
+    private readonly PaiementService _paiementService;
+    private readonly ProjetService _projetService;
 
-    public ProjetController(ApplicationDbContext contexte, UserManager<Utilisateur> gestionnaireUtilisateurs, ServiceStockage serviceStockage)
+    public ProjetController(ApplicationDbContext contexte, UserManager<Utilisateur> gestionnaireUtilisateurs, ServiceStockage serviceStockage, PaiementService paiementService, ProjetService projetService)
     {
         _contexte = contexte;
         _gestionnaireUtilisateurs = gestionnaireUtilisateurs;
         _serviceStockage = serviceStockage;
+        _paiementService = paiementService;
+        _projetService = projetService;
     }
 
     [HttpGet]
@@ -35,15 +39,37 @@ public class ProjetController : Controller
             return RedirectToAction("Connexion", "Auth");
         }
 
-        var projets = await _contexte.Projets
-            .Where(p => p.IdInvestisseur == utilisateur.Id)
-            .Include(p => p.Jalons)
+        var estEntrepreneur = utilisateur.Role == RoleUtilisateur.Entrepreneur;
+        var idEntrepreneur = await ObtenirIdEntrepreneurAsync(utilisateur);
+
+        IQueryable<Projet> requete = _contexte.Projets.Include(p => p.Jalons);
+
+        if (estEntrepreneur)
+        {
+            if (!idEntrepreneur.HasValue)
+            {
+                return View(new TableauBordProjetViewModel { EstEntrepreneur = true });
+            }
+
+            requete = requete.Where(p => p.IdEntrepreneur == idEntrepreneur.Value);
+        }
+        else if (utilisateur.Role == RoleUtilisateur.Investisseur)
+        {
+            requete = requete.Where(p => p.IdInvestisseur == utilisateur.Id);
+        }
+        else
+        {
+            return Forbid();
+        }
+
+        var projets = await requete
             .OrderByDescending(p => p.DateCreation)
             .AsNoTracking()
             .ToListAsync();
 
         var statistiques = new TableauBordProjetViewModel
         {
+            EstEntrepreneur = estEntrepreneur,
             TotalProjets = projets.Count,
             ProjetsActifs = projets.Count(p => p.Statut is not StatutProjet.Termine and not StatutProjet.Annule),
             JalonsEnAttente = projets.Sum(p => p.Jalons.Count(j => !j.EstValide)),
@@ -100,6 +126,12 @@ public class ProjetController : Controller
 
         if (!ModelState.IsValid)
         {
+            return View(modele);
+        }
+
+        if (modele.Jalons.Count > 10)
+        {
+            ModelState.AddModelError(string.Empty, "Vous pouvez ajouter jusqu’à 10 jalons maximum.");
             return View(modele);
         }
 
@@ -205,13 +237,20 @@ public class ProjetController : Controller
             return NotFound();
         }
 
-        var vue = await ConstruireDetailProjetViewModelAsync(projet);
+        var photos = await _contexte.Photos
+            .Where(p => p.IdProjet == id)
+            .Include(p => p.Jalon)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var vue = await ConstruireDetailProjetViewModelAsync(projet, photos, utilisateur.Role == RoleUtilisateur.Investisseur);
         return View(vue);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> TeleverserPhoto(int id, IFormFile? photoProjet, string? latitude, string? longitude)
+    [Authorize(Roles = nameof(RoleUtilisateur.Investisseur))]
+    public async Task<IActionResult> ValiderJalon(int id)
     {
         var utilisateur = await ObtenirUtilisateurActuelAsync();
         if (utilisateur is null)
@@ -219,70 +258,74 @@ public class ProjetController : Controller
             return RedirectToAction("Connexion", "Auth");
         }
 
-        var idEntrepreneur = await ObtenirIdEntrepreneurAsync(utilisateur);
-        if (utilisateur.Role == RoleUtilisateur.Entrepreneur && !idEntrepreneur.HasValue)
+        var jalon = await _contexte.Jalons
+            .Include(j => j.Projet)
+            .FirstOrDefaultAsync(j => j.IdJalon == id && j.Projet!.IdInvestisseur == utilisateur.Id);
+
+        if (jalon is null)
         {
-            return Forbid();
+            return NotFound();
         }
 
-        var projet = await _contexte.Projets
-            .Where(p => p.IdProjet == id && (p.IdInvestisseur == utilisateur.Id || (idEntrepreneur.HasValue && p.IdEntrepreneur == idEntrepreneur.Value)))
-            .Include(p => p.Jalons)
-            .Include(p => p.Entrepreneur)
-                .ThenInclude(e => e!.Utilisateur)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
+        var resultat = await _paiementService.LibererPaiementPourJalonAsync(id);
+        if (!resultat.IsSuccess)
+        {
+            TempData["MessageErreur"] = resultat.Message;
+            return RedirectToAction(nameof(Details), new { id = jalon.IdProjet });
+        }
 
+        TempData["MessageSucces"] = $"Le jalon \"{jalon.Titre}\" a été validé et le paiement a été libéré.";
+        return RedirectToAction(nameof(Details), new { id = jalon.IdProjet });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(RoleUtilisateur.Investisseur))]
+    public async Task<IActionResult> Annuler(int id)
+    {
+        var utilisateur = await ObtenirUtilisateurActuelAsync();
+        if (utilisateur is null)
+        {
+            return RedirectToAction("Connexion", "Auth");
+        }
+
+        var projet = await _contexte.Projets.FirstOrDefaultAsync(p => p.IdProjet == id && p.IdInvestisseur == utilisateur.Id);
         if (projet is null)
         {
             return NotFound();
         }
 
-        if (photoProjet is null || photoProjet.Length == 0)
-        {
-            ViewData["MessageErreur"] = "Choisissez une photo à téléverser.";
-            return View("Details", await ConstruireDetailProjetViewModelAsync(projet));
-        }
+        var resultat = await _projetService.AnnulerProjetAsync(id);
+        TempData[resultat.IsSuccess ? "MessageSucces" : "MessageErreur"] = resultat.IsSuccess
+            ? "Le projet a été annulé."
+            : resultat.Message;
 
-        if (!double.TryParse(latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out var latitudePhoto)
-            || !double.TryParse(longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out var longitudePhoto))
-        {
-            ViewData["MessageErreur"] = "La position GPS est requise pour vérifier l’authenticité de la photo.";
-            return View("Details", await ConstruireDetailProjetViewModelAsync(projet));
-        }
-
-        if (!EstDansLaZoneCameroun(latitudePhoto, longitudePhoto))
-        {
-            ViewData["MessageErreur"] = "La position GPS doit se trouver au Cameroun.";
-            return View("Details", await ConstruireDetailProjetViewModelAsync(projet));
-        }
-
-        var resultat = await _serviceStockage.EnregistrerAsync(photoProjet, $"projets/{id}");
-        var distance = CalculerDistanceEnMetres(latitudePhoto, longitudePhoto, projet.Latitude, projet.Longitude);
-        var photo = new PhotoProjetViewModel
-        {
-            Url = resultat.Url,
-            NomFichier = Path.GetFileName(resultat.Url),
-            Horodatage = DateTimeOffset.UtcNow.ToString("g"),
-            Latitude = latitudePhoto.ToString("0.####", CultureInfo.InvariantCulture),
-            Longitude = longitudePhoto.ToString("0.####", CultureInfo.InvariantCulture),
-            Distance = FormaterDistance(distance),
-            EstAuthentique = distance <= 200,
-            Source = "Caméra mobile",
-            HashSHA256 = resultat.HashSHA256
-        };
-
-        ViewData["MessageSucces"] = photo.EstAuthentique
-            ? "La photo GPS a été téléversée et vérifiée comme authentique."
-            : "La photo GPS a bien été téléversée, mais elle est à vérifier car elle est hors zone.";
-
-        return View("Details", await ConstruireDetailProjetViewModelAsync(projet, new[] { photo }));
+        return RedirectToAction(nameof(Index));
     }
 
-    private async Task<DetailProjetViewModel> ConstruireDetailProjetViewModelAsync(Projet projet, IEnumerable<PhotoProjetViewModel>? photos = null)
+    private async Task<DetailProjetViewModel> ConstruireDetailProjetViewModelAsync(Projet projet, IEnumerable<Photo>? photos = null, bool peutValiderJalons = false)
     {
+        var photosPersistees = (photos ?? Enumerable.Empty<Photo>()).ToList();
+        var photosViewModel = photosPersistees.Select(photo => new PhotoProjetViewModel
+        {
+            IdPhoto = photo.IdPhoto,
+            IdJalon = photo.IdJalon,
+            JalonTitre = photo.Jalon?.Titre ?? "Jalon non identifié",
+            Url = photo.Url,
+            NomFichier = Path.GetFileName(photo.Url),
+            Horodatage = photo.HorodatageGps.ToString("g"),
+            Latitude = photo.Latitude.ToString("0.####", CultureInfo.InvariantCulture),
+            Longitude = photo.Longitude.ToString("0.####", CultureInfo.InvariantCulture),
+            Altitude = photo.Altitude?.ToString("0.####", CultureInfo.InvariantCulture),
+            Distance = FormaterDistance(CalculerDistanceEnMetres(photo.Latitude, photo.Longitude, projet.Latitude, projet.Longitude)),
+            EstAuthentique = photo.EstAuthentique,
+            Source = photo.Source,
+            HashSHA256 = photo.HashSHA256
+        }).ToList();
+
         return new DetailProjetViewModel
         {
+            PeutValiderJalons = peutValiderJalons,
             IdProjet = projet.IdProjet,
             Titre = projet.Titre,
             TypeProjet = projet.TypeProjet,
@@ -306,9 +349,11 @@ public class ProjetController : Controller
                     Ordre = j.Ordre,
                     DateLimite = j.DateLimite,
                     EstValide = j.EstValide,
-                    DateValidation = j.DateValidation
+                    DateValidation = j.DateValidation,
+                    PeutValider = peutValiderJalons && photosViewModel.Any(p => p.IdJalon == j.IdJalon && p.EstAuthentique),
+                    Photos = photosViewModel.Where(p => p.IdJalon == j.IdJalon).ToList()
                 }).ToList(),
-            Photos = photos?.ToList() ?? new List<PhotoProjetViewModel>()
+            Photos = photosViewModel
         };
     }
 

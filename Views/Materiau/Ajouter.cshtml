@@ -1,0 +1,37 @@
+@model DiaspoChantier.ViewModels.AjoutMateriauViewModel
+@{ ViewData["Title"] = "Ajouter un matériau"; }
+
+<section class="section-panel" style="max-width:640px;margin:2rem auto;">
+    <h1 class="section-title">Enregistrer un achat de matériau</h1>
+    <form asp-action="Ajouter" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="IdProjet" />
+        <div class="form-group mb-3">
+            <label asp-for="Fournisseur" class="form-label"></label>
+            <input asp-for="Fournisseur" class="form-control" />
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Designation" class="form-label"></label>
+            <input asp-for="Designation" class="form-control" />
+        </div>
+        <div class="form-row-2 mb-3">
+            <div class="form-group">
+                <label asp-for="Quantite" class="form-label"></label>
+                <input asp-for="Quantite" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Unite" class="form-label"></label>
+                <input asp-for="Unite" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="PrixTotal" class="form-label"></label>
+            <input asp-for="PrixTotal" class="form-control" />
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Facture" class="form-label"></label>
+            <input asp-for="Facture" type="file" class="form-control" accept="image/*,.pdf" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer et générer le QR</button>
+    </form>
+</section>

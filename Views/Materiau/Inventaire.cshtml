@@ -1,0 +1,31 @@
+@model List<DiaspoChantier.Models.Materiau>
+@{ ViewData["Title"] = "Inventaire matériaux"; var projetId = (int)ViewBag.ProjetId; }
+
+<section class="section-panel">
+    <div class="section-header mb-3">
+        <h1 class="section-title mb-0">Inventaire matériaux</h1>
+        <a class="btn btn-modern-primary" asp-action="Ajouter" asp-route-projetId="@projetId">Ajouter</a>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <p class="section-copy">Aucun matériau enregistré.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Fournisseur</th><th>Désignation</th><th>Qté</th><th>Prix</th><th>QR</th></tr></thead>
+            <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td>@m.Fournisseur</td>
+                    <td>@m.Designation</td>
+                    <td>@m.Quantite @m.Unite</td>
+                    <td>@m.PrixTotal.ToString("N0") FCFA</td>
+                    <td><a href="@m.QrCodePayload" target="_blank">Vérifier</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>

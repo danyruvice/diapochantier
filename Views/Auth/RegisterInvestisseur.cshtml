@@ -48,6 +48,15 @@
                 </div>
 
                 <div class="form-section">
+                    <div class="form-section-title">Vérification d'identité</div>
+                    <div class="form-group">
+                        <label asp-for="FichierPieceIdentite" class="form-label"></label>
+                        <input asp-for="FichierPieceIdentite" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
+                        <span asp-validation-for="FichierPieceIdentite" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-section">
                     <div class="form-section-title">Sécurité du compte</div>
                     <div class="form-row-2">
                         <div class="form-group">

@@ -1,6 +1,7 @@
 using System.Text;
 using DiaspoChantier.Data;
 using DiaspoChantier.Enums;
+using DiaspoChantier.Middleware;
 using DiaspoChantier.Models;
 using DiaspoChantier.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,13 +61,32 @@ authenticationBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, optio
     };
 });
 
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ServiceStockage>();
 builder.Services.AddScoped<ServiceEmail>();
 builder.Services.AddScoped<ServiceJeton>();
+builder.Services.AddScoped<PhotoService>();
+builder.Services.AddScoped<PaiementService>();
+builder.Services.AddScoped<ProjetService>();
+builder.Services.AddScoped<ScoreFiabiliteService>();
+builder.Services.AddScoped<MateriauService>();
+builder.Services.AddHostedService<PhotosSuspectesBackgroundService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Investisseur", p => p.RequireRole(nameof(RoleUtilisateur.Investisseur)));
+    options.AddPolicy("Entrepreneur", p => p.RequireRole(nameof(RoleUtilisateur.Entrepreneur)));
+    options.AddPolicy("Administrateur", p => p.RequireRole(nameof(RoleUtilisateur.Administrateur)));
+});
 
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
+{
+    o.MultipartBodyLengthLimit = 20_000_000;
+});
 
 var app = builder.Build();
 
@@ -85,11 +105,13 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<VerificationCompteMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllers();
 app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())
