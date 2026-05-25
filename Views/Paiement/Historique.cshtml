@@ -1,0 +1,71 @@
+@model DiaspoChantier.ViewModels.HistoriquePaiementViewModel
+@{
+    ViewData["Title"] = "Historique des paiements";
+}
+
+<div style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem;">
+    <div style="display:flex;justify-content:space-between;gap:1rem;align-items:end;flex-wrap:wrap;margin-bottom:1.5rem;">
+        <div>
+            <p style="margin:0 0 .4rem;color:#1f7a5a;font-weight:700;">Historique</p>
+            <h1 style="margin:0;font-size:2rem;">Suivi des dépôts et libérations</h1>
+            <p style="margin:.5rem 0 0;color:#4b5563;max-width:760px;">
+                Consultez les transactions du séquestre, l’état des paiements et les actions réalisées sur vos jalons.
+            </p>
+        </div>
+        <a asp-action="Depot" class="nav-btn nav-btn-primary">Faire un dépôt</a>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Solde bloqué</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.SoldeBloque.ToString("N0") FCFA</h2>
+        </div>
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Solde libéré</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.SoldeLibere.ToString("N0") FCFA</h2>
+        </div>
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Transactions</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.Paiements.Count</h2>
+        </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #dbe3ea;border-radius:18px;overflow:hidden;box-shadow:0 12px 30px rgba(15,23,42,0.07);">
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Projet</th>
+                    <th>Type</th>
+                    <th>Canal</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Paiements.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" style="text-align:center;color:#6b7280;padding:1.5rem;">Aucune transaction pour le moment.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var paiement in Model.Paiements)
+                    {
+                        <tr>
+                            <td>@paiement.TitreProjet</td>
+                            <td>@paiement.TypePaiement</td>
+                            <td>@paiement.Canal</td>
+                            <td>@paiement.Montant.ToString("N0") FCFA</td>
+                            <td><span class="badge">@paiement.Statut</span></td>
+                            <td>@paiement.DateCreation.ToString("g")</td>
+                            <td>@paiement.Message</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -40,6 +40,26 @@ namespace DiaspoChantier.Services
             return EnvoyerMessageAsync(email, "Décision de vérification", contenu);
         }
 
+        public Task EnvoyerRecuDepotAsync(string email, string prenom, string projet, decimal montant, string canal, string reference)
+        {
+            var contenu = $"<p>Bonjour {prenom},</p>" +
+                $"<p>Votre dépôt de <strong>{montant:N0} FCFA</strong> pour le projet <strong>{projet}</strong> a bien été enregistré via {canal}.</p>" +
+                $"<p>Référence : <strong>{reference}</strong></p>" +
+                "<p>Les fonds sont actuellement bloqués dans le séquestre jusqu’à validation du jalon.</p>";
+
+            return EnvoyerMessageAsync(email, "Reçu de dépôt - Diaspo-Chantier", contenu);
+        }
+
+        public Task EnvoyerLiberationPaiementAsync(string email, string prenom, string projet, decimal montant, string reference)
+        {
+            var contenu = $"<p>Bonjour {prenom},</p>" +
+                $"<p>Le paiement de <strong>{montant:N0} FCFA</strong> pour le projet <strong>{projet}</strong> a été libéré.</p>" +
+                $"<p>Référence : <strong>{reference}</strong></p>" +
+                "<p>Vous pouvez consulter le détail dans votre tableau de bord.</p>";
+
+            return EnvoyerMessageAsync(email, "Confirmation de paiement - Diaspo-Chantier", contenu);
+        }
+
         private async Task EnvoyerMessageAsync(string email, string sujet, string contenu)
         {
             var hote = _configuration["Smtp:Host"];

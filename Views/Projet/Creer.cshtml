@@ -60,6 +60,18 @@
                     <span asp-validation-for="Longitude" class="text-danger"></span>
                 </div>
             </div>
+
+            <div class="mt-3">
+                <div class="section-header mb-2">
+                    <div>
+                        <h2 class="form-section-title mb-1">Carte GPS</h2>
+                        <p class="section-copy mb-0">Cliquez sur la carte pour positionner le chantier au Cameroun. Les champs latitude/longitude se mettent à jour automatiquement.</p>
+                    </div>
+                    <button type="button" id="recenter-map" class="btn btn-modern-secondary">Recentrer Cameroun</button>
+                </div>
+                <div id="project-map" class="map-box" aria-label="Carte pour sélectionner la localisation du projet"></div>
+                <p id="map-status" class="section-copy mt-2 mb-0">Sélectionnez une position sur la carte ou renseignez les coordonnées manuellement.</p>
+            </div>
             <p class="section-copy mt-2 mb-0">La validation inclut un contrôle de zone Cameroun pour sécuriser la géolocalisation du projet.</p>
         </div>
 
@@ -71,6 +83,7 @@
                 </div>
                 <button type="button" id="add-milestone" class="btn btn-modern-secondary">+ Ajouter un jalon</button>
             </div>
+            <p class="section-copy mb-3">Maximum 10 jalons par projet.</p>
 
             <div id="milestone-container">
                 @for (var index = 0; index < Model.Jalons.Count; index++)
@@ -138,17 +151,25 @@
 </template>
 
 @section Scripts {
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function () {
     const container = document.getElementById('milestone-container');
     const template = document.getElementById('milestone-template');
     const addButton = document.getElementById('add-milestone');
+    const maxMilestones = 10;
 
     if (!container || !template || !addButton) {
         return;
     }
 
-    const fields = ['Titre', 'Description', 'Montant', 'DateLimite'];
+    function updateAddButtonState() {
+        const rows = container.querySelectorAll('[data-milestone-row]');
+        const reachedLimit = rows.length >= maxMilestones;
+        addButton.disabled = reachedLimit;
+        addButton.textContent = reachedLimit ? 'Limite atteinte' : '+ Ajouter un jalon';
+        addButton.setAttribute('aria-disabled', String(reachedLimit));
+    }
 
     function renumberRows() {
         const rows = container.querySelectorAll('[data-milestone-row]');
@@ -166,11 +187,17 @@
                 }
             });
         });
+        updateAddButtonState();
     }
 
     function createRow() {
-        const clone = template.content.firstElementChild.cloneNode(true);
         const rows = container.querySelectorAll('[data-milestone-row]');
+        if (rows.length >= maxMilestones) {
+            updateAddButtonState();
+            return;
+        }
+
+        const clone = template.content.firstElementChild.cloneNode(true);
         const index = rows.length;
         clone.querySelectorAll('[data-field]').forEach((field) => {
             field.name = `Jalons[${index}].${field.dataset.field}`;
@@ -201,5 +228,60 @@
 
     renumberRows();
 })();
+
+    const latInput = document.getElementById('Latitude');
+    const lonInput = document.getElementById('Longitude');
+    const mapStatus = document.getElementById('map-status');
+    const recenterButton = document.getElementById('recenter-map');
+
+    if (window.L && latInput && lonInput && mapStatus && recenterButton) {
+        const initialLat = parseFloat(latInput.value) || 4.5;
+        const initialLon = parseFloat(lonInput.value) || 12.0;
+        const map = window.L.map('project-map').setView([initialLat, initialLon], 6);
+
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker = window.L.marker([initialLat, initialLon], { draggable: true }).addTo(map);
+
+        const updateStatus = (lat, lon) => {
+            mapStatus.textContent = `Point sélectionné à ${lat.toFixed(4)} / ${lon.toFixed(4)}.`;
+            latInput.value = lat.toFixed(4);
+            lonInput.value = lon.toFixed(4);
+        };
+
+        const syncFromInputs = () => {
+            const currentLat = parseFloat(latInput.value);
+            const currentLon = parseFloat(lonInput.value);
+
+            if (Number.isFinite(currentLat) && Number.isFinite(currentLon)) {
+                marker.setLatLng([currentLat, currentLon]);
+                map.panTo([currentLat, currentLon]);
+                updateStatus(currentLat, currentLon);
+            }
+        };
+
+        marker.on('dragend', () => {
+            const position = marker.getLatLng();
+            updateStatus(position.lat, position.lng);
+        });
+
+        map.on('click', (event) => {
+            marker.setLatLng(event.latlng);
+            updateStatus(event.latlng.lat, event.latlng.lng);
+        });
+
+        latInput.addEventListener('change', syncFromInputs);
+        lonInput.addEventListener('change', syncFromInputs);
+
+        recenterButton.addEventListener('click', () => {
+            marker.setLatLng([4.5, 12.0]);
+            map.panTo([4.5, 12.0]);
+            updateStatus(4.5, 12.0);
+        });
+
+        updateStatus(initialLat, initialLon);
+    }
 </script>
 }

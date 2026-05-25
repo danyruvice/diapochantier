@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DiaspoChantier.Data;
 using DiaspoChantier.Enums;
 using DiaspoChantier.Models;
@@ -38,7 +39,7 @@ namespace DiaspoChantier.Services
             _configuration = configuration;
         }
 
-        public async Task<IdentityResult> CreerCompteInvestisseurAsync(InscriptionInvestisseurViewModel modele)
+        public async Task<IdentityResult> CreerCompteInvestisseurAsync(InscriptionInvestisseurViewModel modele, bool connexionAutomatique = true)
         {
             await AssurerRoleExisteAsync(RoleUtilisateur.Investisseur);
 
@@ -61,14 +62,53 @@ namespace DiaspoChantier.Services
             }
 
             await _gestionnaireUtilisateurs.AddToRoleAsync(utilisateur, RoleUtilisateur.Investisseur.ToString());
+
+            if (modele.FichierPieceIdentite is not null)
+            {
+                var resultatPiece = await _serviceStockage.EnregistrerAsync(modele.FichierPieceIdentite, "investisseurs/identite");
+                utilisateur.PieceIdentiteUrl = resultatPiece.Url;
+                utilisateur.PieceIdentiteHashSha256 = resultatPiece.HashSHA256;
+                await _gestionnaireUtilisateurs.UpdateAsync(utilisateur);
+            }
+
             await _serviceEmail.EnvoyerConfirmationInscriptionAsync(utilisateur.Email ?? modele.Email, utilisateur.Prenom);
-            await _gestionnaireConnexion.SignInAsync(utilisateur, isPersistent: false);
+            if (connexionAutomatique)
+            {
+                await _gestionnaireConnexion.SignInAsync(utilisateur, isPersistent: false);
+            }
+
             return resultat;
         }
 
         public async Task<IdentityResult> CreerCompteEntrepreneurAsync(InscriptionEntrepreneurViewModel modele)
         {
             await AssurerRoleExisteAsync(RoleUtilisateur.Entrepreneur);
+
+            var existant = await _gestionnaireUtilisateurs.FindByEmailAsync(modele.Email);
+            if (existant is not null)
+            {
+                if (existant.Statut == StatutCompte.Rejete && existant.DateDernierRejet.HasValue)
+                {
+                    var peutResoumettre = existant.DateDernierRejet.Value.AddDays(30) <= DateTime.UtcNow;
+                    if (!peutResoumettre)
+                    {
+                        var joursRestants = (int)Math.Ceiling((existant.DateDernierRejet.Value.AddDays(30) - DateTime.UtcNow).TotalDays);
+                        return IdentityResult.Failed(new IdentityError
+                        {
+                            Code = "RejetRecent",
+                            Description = $"Vous pourrez soumettre un nouveau dossier dans {joursRestants} jour(s)."
+                        });
+                    }
+
+                    return await ResoumettreDossierEntrepreneurAsync(existant, modele);
+                }
+
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateEmail",
+                    Description = "Cette adresse email est déjà utilisée."
+                });
+            }
 
             var utilisateur = new Utilisateur
             {
@@ -103,76 +143,84 @@ namespace DiaspoChantier.Services
             };
 
             await _contexte.AddAsync(entrepreneur);
-
-            if (modele.FichierCNI is not null)
-            {
-                var resultatCni = await _serviceStockage.EnregistrerAsync(modele.FichierCNI, "documents");
-                await _contexte.Documents.AddAsync(new Document
-                {
-                    Type = TypeDocument.CNI,
-                    UrlStockage = resultatCni.Url,
-                    NomFichier = modele.FichierCNI.FileName,
-                    TypeMime = modele.FichierCNI.ContentType,
-                    TailleFichierOctets = modele.FichierCNI.Length,
-                    HashSHA256 = resultatCni.HashSHA256,
-                    Statut = StatutDocument.EnAttente,
-                    Entrepreneur = entrepreneur
-                });
-            }
-
-            if (modele.FichierCartePro is not null)
-            {
-                var resultatCartePro = await _serviceStockage.EnregistrerAsync(modele.FichierCartePro, "documents");
-                await _contexte.Documents.AddAsync(new Document
-                {
-                    Type = TypeDocument.CarteProfessionnelle,
-                    UrlStockage = resultatCartePro.Url,
-                    NomFichier = modele.FichierCartePro.FileName,
-                    TypeMime = modele.FichierCartePro.ContentType,
-                    TailleFichierOctets = modele.FichierCartePro.Length,
-                    HashSHA256 = resultatCartePro.HashSHA256,
-                    Statut = StatutDocument.EnAttente,
-                    Entrepreneur = entrepreneur
-                });
-            }
-
-            if (modele.FichierPortfolio is not null)
-            {
-                var resultatPortfolio = await _serviceStockage.EnregistrerAsync(modele.FichierPortfolio, "documents");
-                await _contexte.Documents.AddAsync(new Document
-                {
-                    Type = TypeDocument.Portfolio,
-                    UrlStockage = resultatPortfolio.Url,
-                    NomFichier = modele.FichierPortfolio.FileName,
-                    TypeMime = modele.FichierPortfolio.ContentType,
-                    TailleFichierOctets = modele.FichierPortfolio.Length,
-                    HashSHA256 = resultatPortfolio.HashSHA256,
-                    Statut = StatutDocument.EnAttente,
-                    Entrepreneur = entrepreneur
-                });
-            }
-
+            await AjouterDocumentsEntrepreneurAsync(entrepreneur, modele);
             await _contexte.SaveChangesAsync();
             await _serviceEmail.EnvoyerConfirmationInscriptionAsync(utilisateur.Email ?? modele.Email, utilisateur.Prenom);
-            await _gestionnaireConnexion.SignInAsync(utilisateur, isPersistent: false);
             return resultat;
         }
 
-        public async Task<SignInResult> ConnexionAsync(ConnexionViewModel modele)
+        public async Task<ConnexionResultat> ConnexionAsync(ConnexionViewModel modele)
         {
-            return await _gestionnaireConnexion.PasswordSignInAsync(modele.Email, modele.MotDePasse, modele.SesouveniDeMoi, lockoutOnFailure: false);
+            var utilisateur = await _gestionnaireUtilisateurs.FindByEmailAsync(modele.Email);
+            if (utilisateur is null)
+            {
+                return ConnexionResultat.Echec("Adresse email ou mot de passe incorrect.");
+            }
+
+            if (utilisateur.Statut == StatutCompte.Suspendu)
+            {
+                return ConnexionResultat.Echec("Votre compte a été désactivé. Contactez le support Diaspo-Chantier.");
+            }
+
+            var resultat = await _gestionnaireConnexion.PasswordSignInAsync(modele.Email, modele.MotDePasse, modele.SesouveniDeMoi, lockoutOnFailure: false);
+            if (!resultat.Succeeded)
+            {
+                return ConnexionResultat.Echec("Adresse email ou mot de passe incorrect.");
+            }
+
+            utilisateur.DerniereConnexion = DateTime.UtcNow;
+            await _gestionnaireUtilisateurs.UpdateAsync(utilisateur);
+            return ConnexionResultat.Succes(resultat);
         }
 
-        public async Task<string?> GenererJetonConnexionAsync(string email)
+        public async Task<JetonConnexionResultat?> GenererJetonConnexionAsync(string email)
         {
             var utilisateur = await _gestionnaireUtilisateurs.FindByEmailAsync(email);
-            if (utilisateur is null)
+            if (utilisateur is null || utilisateur.Statut == StatutCompte.Suspendu)
             {
                 return null;
             }
 
             var roles = await _gestionnaireUtilisateurs.GetRolesAsync(utilisateur);
-            return _serviceJeton.GenererJeton(utilisateur, roles);
+            var accessToken = _serviceJeton.GenererJeton(utilisateur, roles);
+            var refreshToken = await CreerRefreshTokenAsync(utilisateur.Id);
+
+            return new JetonConnexionResultat
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ExpireMinutes = int.TryParse(_configuration["Jwt:ExpireMinutes"], out var minutes) ? minutes : 1440
+            };
+        }
+
+        public async Task<JetonConnexionResultat?> RafraichirJetonAsync(string refreshToken)
+        {
+            var jeton = await _contexte.RefreshTokens
+                .FirstOrDefaultAsync(t => t.Token == refreshToken && !t.EstRevoque && t.DateExpiration > DateTime.UtcNow);
+
+            if (jeton is null)
+            {
+                return null;
+            }
+
+            var utilisateur = await _gestionnaireUtilisateurs.FindByIdAsync(jeton.IdUtilisateur);
+            if (utilisateur is null || utilisateur.Statut == StatutCompte.Suspendu)
+            {
+                return null;
+            }
+
+            jeton.EstRevoque = true;
+            var roles = await _gestionnaireUtilisateurs.GetRolesAsync(utilisateur);
+            var accessToken = _serviceJeton.GenererJeton(utilisateur, roles);
+            var nouveauRefresh = await CreerRefreshTokenAsync(utilisateur.Id);
+            await _contexte.SaveChangesAsync();
+
+            return new JetonConnexionResultat
+            {
+                AccessToken = accessToken,
+                RefreshToken = nouveauRefresh,
+                ExpireMinutes = int.TryParse(_configuration["Jwt:ExpireMinutes"], out var minutes) ? minutes : 1440
+            };
         }
 
         public async Task DeconnexionAsync()
@@ -347,6 +395,11 @@ namespace DiaspoChantier.Services
             }
 
             entrepreneur.Utilisateur.Statut = statut;
+            if (statut == StatutCompte.Rejete)
+            {
+                entrepreneur.Utilisateur.DateDernierRejet = DateTime.UtcNow;
+            }
+
             await _contexte.SaveChangesAsync();
 
             await _serviceEmail.EnvoyerDecisionVerificationAsync(
@@ -358,6 +411,116 @@ namespace DiaspoChantier.Services
             return true;
         }
 
+        private async Task<IdentityResult> ResoumettreDossierEntrepreneurAsync(Utilisateur utilisateur, InscriptionEntrepreneurViewModel modele)
+        {
+            utilisateur.Nom = modele.Nom;
+            utilisateur.Prenom = modele.Prenom;
+            utilisateur.Telephone = modele.Telephone;
+            utilisateur.Adresse = modele.Ville;
+            utilisateur.Statut = StatutCompte.AttenteVerification;
+            utilisateur.DateDernierRejet = null;
+
+            var resultatMdp = await _gestionnaireUtilisateurs.ResetPasswordAsync(
+                utilisateur,
+                await _gestionnaireUtilisateurs.GeneratePasswordResetTokenAsync(utilisateur),
+                modele.MotDePasse);
+
+            if (!resultatMdp.Succeeded)
+            {
+                return resultatMdp;
+            }
+
+            var entrepreneur = await _contexte.Entrepreneurs
+                .Include(e => e.Documents)
+                .FirstOrDefaultAsync(e => e.IdUtilisateur == utilisateur.Id);
+
+            if (entrepreneur is null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "Profil entrepreneur introuvable." });
+            }
+
+            entrepreneur.Specialite = modele.Specialite;
+            entrepreneur.Ville = modele.Ville;
+            entrepreneur.Description = modele.Description;
+            entrepreneur.NumeroMoMo = modele.NumeroMoMo;
+
+            _contexte.Documents.RemoveRange(entrepreneur.Documents);
+            await AjouterDocumentsEntrepreneurAsync(entrepreneur, modele);
+            await _gestionnaireUtilisateurs.UpdateAsync(utilisateur);
+            await _contexte.SaveChangesAsync();
+            await _serviceEmail.EnvoyerConfirmationInscriptionAsync(utilisateur.Email ?? modele.Email, utilisateur.Prenom);
+
+            return IdentityResult.Success;
+        }
+
+        private async Task AjouterDocumentsEntrepreneurAsync(Entrepreneur entrepreneur, InscriptionEntrepreneurViewModel modele)
+        {
+            if (modele.FichierCNI is not null)
+            {
+                var resultatCni = await _serviceStockage.EnregistrerAsync(modele.FichierCNI, "documents");
+                await _contexte.Documents.AddAsync(new Document
+                {
+                    Type = TypeDocument.CNI,
+                    UrlStockage = resultatCni.Url,
+                    NomFichier = modele.FichierCNI.FileName,
+                    TypeMime = modele.FichierCNI.ContentType,
+                    TailleFichierOctets = modele.FichierCNI.Length,
+                    HashSHA256 = resultatCni.HashSHA256,
+                    Statut = StatutDocument.EnAttente,
+                    Entrepreneur = entrepreneur
+                });
+            }
+
+            if (modele.FichierCartePro is not null)
+            {
+                var resultatCartePro = await _serviceStockage.EnregistrerAsync(modele.FichierCartePro, "documents");
+                await _contexte.Documents.AddAsync(new Document
+                {
+                    Type = TypeDocument.CarteProfessionnelle,
+                    UrlStockage = resultatCartePro.Url,
+                    NomFichier = modele.FichierCartePro.FileName,
+                    TypeMime = modele.FichierCartePro.ContentType,
+                    TailleFichierOctets = modele.FichierCartePro.Length,
+                    HashSHA256 = resultatCartePro.HashSHA256,
+                    Statut = StatutDocument.EnAttente,
+                    Entrepreneur = entrepreneur
+                });
+            }
+
+            if (modele.FichierPortfolio is not null)
+            {
+                var resultatPortfolio = await _serviceStockage.EnregistrerAsync(modele.FichierPortfolio, "documents");
+                await _contexte.Documents.AddAsync(new Document
+                {
+                    Type = TypeDocument.Portfolio,
+                    UrlStockage = resultatPortfolio.Url,
+                    NomFichier = modele.FichierPortfolio.FileName,
+                    TypeMime = modele.FichierPortfolio.ContentType,
+                    TailleFichierOctets = modele.FichierPortfolio.Length,
+                    HashSHA256 = resultatPortfolio.HashSHA256,
+                    Statut = StatutDocument.EnAttente,
+                    Entrepreneur = entrepreneur
+                });
+            }
+        }
+
+        private async Task<string> CreerRefreshTokenAsync(string idUtilisateur)
+        {
+            var jours = int.TryParse(_configuration["Jwt:RefreshExpireDays"], out var d) ? d : 7;
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+            _contexte.RefreshTokens.Add(new RefreshToken
+            {
+                IdUtilisateur = idUtilisateur,
+                Token = token,
+                DateExpiration = DateTime.UtcNow.AddDays(jours),
+                DateCreation = DateTime.UtcNow
+            });
+
+            await _contexte.SaveChangesAsync();
+            return token;
+        }
+
         private async Task AssurerRoleExisteAsync(RoleUtilisateur role)
         {
             var nomRole = role.ToString();
@@ -366,5 +529,22 @@ namespace DiaspoChantier.Services
                 await _gestionnaireRoles.CreateAsync(new IdentityRole(nomRole));
             }
         }
+    }
+
+    public sealed class ConnexionResultat
+    {
+        public bool Succeeded { get; init; }
+        public string? MessageErreur { get; init; }
+        public SignInResult? SignInResult { get; init; }
+
+        public static ConnexionResultat Succes(SignInResult resultat) => new() { Succeeded = true, SignInResult = resultat };
+        public static ConnexionResultat Echec(string message) => new() { Succeeded = false, MessageErreur = message };
+    }
+
+    public sealed class JetonConnexionResultat
+    {
+        public string AccessToken { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
+        public int ExpireMinutes { get; set; }
     }
 }

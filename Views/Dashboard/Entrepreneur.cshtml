@@ -1,0 +1,159 @@
+@model DiaspoChantier.ViewModels.EntrepreneurDashboardViewModel
+
+@{
+    ViewData["Title"] = "Tableau de bord entrepreneur";
+}
+
+<section class="dashboard-shell">
+    <section class="section-panel dashboard-hero" id="accueil">
+        <div class="dashboard-hero-top">
+            <div>
+                <p class="eyebrow">Dashboard entrepreneur</p>
+                <h1 class="section-title mb-1">@Model.BonjourMessage</h1>
+                <p class="section-copy mb-0">Suivez vos chantiers et vos jalons depuis un tableau de bord clair et professionnel.</p>
+            </div>
+            <div class="dashboard-hero-actions">
+                <a class="btn btn-modern-primary" asp-controller="Projet" asp-action="Index">Voir mes chantiers</a>
+                <a class="btn btn-modern-secondary" asp-controller="Profil" asp-action="MonProfil">Mon profil</a>
+            </div>
+        </div>
+
+        <div class="metric-grid mt-3">
+            <div class="metric-card">
+                <strong>@Model.ChantiersActifs</strong>
+                <span>Chantiers actifs</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.JalonsASoumettre</strong>
+                <span>Jalons à soumettre</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.ARecevoir.ToString("N0") FCFA</strong>
+                <span>À recevoir</span>
+            </div>
+            <div class="metric-card">
+                <strong>@Model.ScoreFiabilite.ToString("0.0") / 5</strong>
+                <span>Score fiabilité</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="dashboard-layout">
+        <section class="section-panel" id="mes-chantiers">
+            <div class="section-header mb-3">
+                <div>
+                    <p class="eyebrow">Aperçu projet</p>
+                    <h2 class="section-title mb-0">Mes chantiers actifs</h2>
+                </div>
+            </div>
+
+            @if (Model.Projets.Count == 0)
+            {
+                <div class="alert alert-success">Aucun chantier actif n’est encore associé à votre profil. Créez votre premier projet pour alimenter ce tableau de bord.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Projet</th>
+                                <th>Investisseur</th>
+                                <th>Avancement</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var projet in Model.Projets)
+                            {
+                                <tr>
+                                    <td>@projet.Titre</td>
+                                    <td>@projet.Investisseur</td>
+                                    <td>
+                                        <div class="progress-pill">
+                                            <span>@projet.ProgressPourcentage%</span>
+                                        </div>
+                                    </td>
+                                    <td>@projet.Statut</td>
+                                    <td>
+                                        <a class="btn btn-modern-secondary" asp-controller="Projet" asp-action="Details" asp-route-id="@projet.IdProjet">
+                                            @(projet.JalonsASoumettre ? "Soumettre →" : "Voir →")
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <aside class="dashboard-side">
+            <section class="section-panel">
+                <p class="eyebrow">Mon profil</p>
+                <h2 class="section-title mb-3">Profil entrepreneur</h2>
+                <div class="dashboard-profile-identity">
+                    @if (!string.IsNullOrWhiteSpace(Model.PhotoProfilUrl))
+                    {
+                        <img src="@Model.PhotoProfilUrl" alt="Photo de profil entrepreneur" class="profil-avatar" />
+                    }
+                    else
+                    {
+                        <div class="profil-avatar-initiale">P</div>
+                    }
+                    <div>
+                        <div class="profil-info-label">Spécialité</div>
+                        <div class="profil-info-value">@(string.IsNullOrWhiteSpace(Model.Specialite) ? "À compléter" : Model.Specialite)</div>
+                    </div>
+                </div>
+                <div class="profil-stack mt-3">
+                    <div>
+                        <div class="profil-info-label">Ville</div>
+                        <div class="profil-info-value">@(string.IsNullOrWhiteSpace(Model.Ville) ? "À compléter" : Model.Ville)</div>
+                    </div>
+                    <div>
+                        <div class="profil-info-label">Compte</div>
+                        <div class="profil-info-value">@(Model.CompteVerifie ? "Compte vérifié" : "Vérification en cours")</div>
+                    </div>
+                    <div>
+                        <div class="profil-info-label">MoMo</div>
+                        <div class="profil-info-value">@(string.IsNullOrWhiteSpace(Model.MoMo) ? "À renseigner" : Model.MoMo)</div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
+
+    <section class="section-panel" id="jalons">
+        <div class="section-header mb-3">
+            <div>
+                <p class="eyebrow">Suivi des jalons</p>
+                <h2 class="section-title mb-0">Jalons à traiter</h2>
+            </div>
+        </div>
+
+        @if (Model.Jalons.Count == 0)
+        {
+            <div class="alert alert-success">Aucun jalon n’est actuellement disponible pour votre portefeuille.</div>
+        }
+        else
+        {
+            <div class="dashboard-jalons-grid">
+                @foreach (var jalon in Model.Jalons)
+                {
+                    <article class="dashboard-card">
+                        <p class="eyebrow mb-1">@jalon.ProjetTitre</p>
+                        <h3 class="mb-2">@jalon.Titre</h3>
+                        <div class="dashboard-card-meta">
+                            <span>@jalon.Montant.ToString("N0") FCFA</span>
+                            <span>@(jalon.DateLimite?.ToString("dd/MM/yyyy") ?? "Date à définir")</span>
+                            <span class="badge">@jalon.Statut</span>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+</section>

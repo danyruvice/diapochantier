@@ -1,0 +1,205 @@
+@model DiaspoChantier.ViewModels.DepotPaiementViewModel
+@inject IConfiguration Configuration
+@{
+    ViewData["Title"] = "Dépôt et séquestre";
+    var publishableKey = Configuration["Payments:Stripe:PublishableKey"] ?? string.Empty;
+}
+
+<div style="max-width:1100px;margin:0 auto;padding:1.5rem 1rem 3rem;">
+    <div style="display:flex;justify-content:space-between;gap:1rem;align-items:end;flex-wrap:wrap;margin-bottom:1.5rem;">
+        <div>
+            <p style="margin:0 0 .4rem;color:#1f7a5a;font-weight:700;">Séquestre & paiements</p>
+            <h1 style="margin:0;font-size:2rem;">Dépôt sécurisé pour votre projet</h1>
+            <p style="margin:.5rem 0 0;color:#4b5563;max-width:760px;">
+                Déposez des fonds dans le séquestre, suivez leur statut et libérez-les automatiquement au moment de la validation du jalon.
+            </p>
+        </div>
+        <a asp-action="Historique" class="nav-btn nav-btn-primary">Voir l’historique</a>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.MessageSucces))
+    {
+        <div style="background:#e8f7ee;border:1px solid #b8e0cc;color:#12563a;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;">@Model.MessageSucces</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.MessageErreur))
+    {
+        <div style="background:#fdecea;border:1px solid #f5b5af;color:#8a1f1f;padding:.9rem 1rem;border-radius:12px;margin-bottom:1rem;">@Model.MessageErreur</div>
+    }
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Solde bloqué</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.SoldeBloque.ToString("N0") FCFA</h2>
+        </div>
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Solde libéré</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.SoldeLibere.ToString("N0") FCFA</h2>
+        </div>
+        <div style="background:#fff;border:1px solid #dbe3ea;border-radius:16px;padding:1rem;box-shadow:0 8px 24px rgba(15,23,42,0.06);">
+            <p style="margin:0;color:#4b5563;font-size:.9rem;">Projets disponibles</p>
+            <h2 style="margin:.4rem 0 0;font-size:1.8rem;">@Model.Projets.Count</h2>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:start;">
+        <form id="depot-form" asp-action="Initier" method="post" style="background:#fff;border:1px solid #dbe3ea;border-radius:18px;padding:1.25rem;box-shadow:0 12px 30px rgba(15,23,42,0.07);">
+            @Html.AntiForgeryToken()
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+                <div>
+                    <label for="projetId" style="display:block;margin-bottom:.4rem;font-weight:700;">Projet</label>
+                    <select id="projetId" name="projetId" required style="width:100%;padding:.85rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;">
+                        <option value="">Sélectionnez un projet</option>
+                        @foreach (var projet in Model.Projets)
+                        {
+                            <option value="@projet.IdProjet">@projet.Titre</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label for="montant" style="display:block;margin-bottom:.4rem;font-weight:700;">Montant</label>
+                    <input id="montant" name="montant" type="number" min="1" step="1" required style="width:100%;padding:.85rem;border:1px solid #cbd5e1;border-radius:10px;" />
+                </div>
+                <div>
+                    <label for="canal" style="display:block;margin-bottom:.4rem;font-weight:700;">Canal</label>
+                    <select id="canal" name="canal" required style="width:100%;padding:.85rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;">
+                        <option value="Stripe">Stripe (Carte)</option>
+                        <option value="MtnMomo">MTN MoMo</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="devise" style="display:block;margin-bottom:.4rem;font-weight:700;">Devise</label>
+                    <select id="devise" name="devise" required style="width:100%;padding:.85rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;">
+                        <option value="xaf">XAF</option>
+                        <option value="cad">CAD</option>
+                        <option value="eur">EUR</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top:1rem;">
+                <label for="telephone" style="display:block;margin-bottom:.4rem;font-weight:700;">Numéro MTN MoMo (optionnel pour Stripe)</label>
+                <input id="telephone" name="telephone" type="tel" placeholder="690000000" style="width:100%;padding:.85rem;border:1px solid #cbd5e1;border-radius:10px;" />
+            </div>
+
+            <div id="card-element-container" style="margin-top:1rem;padding:1rem;border:1px dashed #cbd5e1;border-radius:12px;display:none;">
+                <p style="margin:0 0 .75rem;color:#374151;font-weight:700;">Informations de carte</p>
+                <div id="card-element"></div>
+            </div>
+
+            <div id="payment-status" style="margin-top:1rem;padding:.9rem 1rem;border-radius:12px;background:#f8fafc;color:#334155;display:none;"></div>
+
+            <div style="display:flex;gap:.75rem;align-items:center;margin-top:1.25rem;flex-wrap:wrap;">
+                <button id="submit-depot" type="submit" class="nav-btn nav-btn-primary">Initier le dépôt</button>
+                <span style="color:#6b7280;font-size:.95rem;">Le montant est bloqué jusqu’à validation du jalon.</span>
+            </div>
+        </form>
+
+        <aside style="background:#0f172a;color:#fff;border-radius:18px;padding:1.25rem;box-shadow:0 12px 30px rgba(15,23,42,0.1);">
+            <h2 style="margin-top:0;font-size:1.15rem;">Règles du séquestre</h2>
+            <ul style="padding-left:1.1rem;line-height:1.8;color:#dbeafe;">
+                <li>Le dépôt est verrouillé jusqu’à validation du jalon.</li>
+                <li>La validation photo GPS active la libération des fonds.</li>
+                <li>Les fonds restent auditables dans l’historique des paiements.</li>
+            </ul>
+            <p style="margin-top:1rem;color:#cbd5e1;font-size:.95rem;">
+                Retrouvez aussi les jalons en attente depuis votre tableau de bord.
+            </p>
+        </aside>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const form = document.getElementById('depot-form');
+    const canalSelect = document.getElementById('canal');
+    const cardContainer = document.getElementById('card-element-container');
+    const statusBox = document.getElementById('payment-status');
+    const submitButton = document.getElementById('submit-depot');
+    const publishableKey = '@publishableKey';
+
+    const showStatus = (message, isError = false) => {
+        statusBox.style.display = 'block';
+        statusBox.style.background = isError ? '#fdecea' : '#ecfdf3';
+        statusBox.style.color = isError ? '#7f1d1d' : '#14532d';
+        statusBox.textContent = message;
+    };
+
+    const toggleCard = () => {
+        const isStripe = canalSelect.value === 'Stripe';
+        cardContainer.style.display = isStripe ? 'block' : 'none';
+    };
+
+    let stripe = null;
+    let elements = null;
+    let card = null;
+
+    if (publishableKey) {
+        stripe = Stripe(publishableKey);
+        elements = stripe.elements();
+        card = elements.create('card');
+        card.mount('#card-element');
+    }
+
+    canalSelect.addEventListener('change', toggleCard);
+    toggleCard();
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
+        submitButton.textContent = 'Traitement en cours...';
+        statusBox.style.display = 'none';
+
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+        if (!data.success) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Initier le dépôt';
+            showStatus(data.message || 'Le dépôt n’a pas pu être initié.', true);
+            return;
+        }
+
+        if (canalSelect.value === 'Stripe') {
+            if (!stripe || !card || !data.clientSecret) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Initier le dépôt';
+                showStatus('La clé publique Stripe est absente. Configurez Payments:Stripe:PublishableKey.', true);
+                return;
+            }
+
+            const result = await stripe.confirmCardPayment(data.clientSecret, {
+                payment_method: {
+                    card: card,
+                    billing_details: {
+                        name: 'Investisseur Diaspo-Chantier'
+                    }
+                }
+            });
+
+            if (result.error) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Initier le dépôt';
+                showStatus(result.error.message || 'Le paiement Stripe a échoué.', true);
+                return;
+            }
+
+            showStatus('Paiement confirmé. Redirection vers l’historique...');
+            window.location.href = '/Paiement/Historique';
+            return;
+        }
+
+        showStatus(data.message || 'Le dépôt MTN MoMo a été initié.');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Initier le dépôt';
+    });
+</script>
+}

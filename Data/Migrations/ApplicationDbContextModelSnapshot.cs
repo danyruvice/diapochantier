@@ -123,6 +123,48 @@ namespace DiaspoChantier.Data.Migrations
                     b.ToTable("Entrepreneurs");
                 });
 
+            modelBuilder.Entity("DiaspoChantier.Models.InvitationProjet", b =>
+                {
+                    b.Property<int>("IdInvitation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdInvitation"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateReponse")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdEntrepreneur")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdProjet")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("MotifRefus")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdInvitation");
+
+                    b.HasIndex("IdEntrepreneur");
+
+                    b.HasIndex("IdProjet", "IdEntrepreneur")
+                        .IsUnique();
+
+                    b.ToTable("Invitations");
+                });
+
             modelBuilder.Entity("DiaspoChantier.Models.Jalon", b =>
                 {
                     b.Property<int>("IdJalon")
@@ -164,6 +206,136 @@ namespace DiaspoChantier.Data.Migrations
                     b.HasIndex("IdProjet");
 
                     b.ToTable("Jalons");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Paiement", b =>
+                {
+                    b.Property<int>("IdPaiement")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaiement"));
+
+                    b.Property<string>("Canal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateMiseAJour")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DatePaiement")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IdEntrepreneur")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdInvestisseur")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("IdProjet")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdSequestre")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("Montant")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("RecuEmailEnvoye")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReferenceExterne")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypePaiement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdPaiement");
+
+                    b.HasIndex("IdEntrepreneur");
+
+                    b.HasIndex("IdInvestisseur");
+
+                    b.HasIndex("IdProjet");
+
+                    b.HasIndex("IdSequestre");
+
+                    b.HasIndex("ReferenceExterne")
+                        .IsUnique();
+
+                    b.ToTable("Paiements");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Photo", b =>
+                {
+                    b.Property<int>("IdPhoto")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPhoto"));
+
+                    b.Property<double?>("Altitude")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EstAuthentique")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("HashSHA256")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("HorodatageGps")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdJalon")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdProjet")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("IdPhoto");
+
+                    b.HasIndex("IdJalon");
+
+                    b.HasIndex("IdProjet");
+
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("DiaspoChantier.Models.Projet", b =>
@@ -224,6 +396,84 @@ namespace DiaspoChantier.Data.Migrations
                     b.ToTable("Projets");
                 });
 
+            modelBuilder.Entity("DiaspoChantier.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateExpiration")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EstRevoque")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IdUtilisateur")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Sequestre", b =>
+                {
+                    b.Property<int>("IdSequestre")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdSequestre"));
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateMiseAJour")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IdInvestisseur")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("IdProjet")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MontantBloque")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MontantLibere")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Statut")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdSequestre");
+
+                    b.HasIndex("IdInvestisseur");
+
+                    b.HasIndex("IdProjet", "IdInvestisseur")
+                        .IsUnique();
+
+                    b.ToTable("Sequestres");
+                });
+
             modelBuilder.Entity("DiaspoChantier.Models.TokenResetPassword", b =>
                 {
                     b.Property<int>("Id")
@@ -275,6 +525,9 @@ namespace DiaspoChantier.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DateDernierRejet")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("DateInscription")
                         .HasColumnType("datetime2");
 
@@ -320,6 +573,14 @@ namespace DiaspoChantier.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("PieceIdentiteHashSha256")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("PieceIdentiteUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Prenom")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -361,6 +622,40 @@ namespace DiaspoChantier.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Utilisateurs", (string)null);
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.WebhookEvent", b =>
+                {
+                    b.Property<int>("IdWebhookEvent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdWebhookEvent"));
+
+                    b.Property<string>("EventId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("PayloadHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("IdWebhookEvent");
+
+                    b.HasIndex("EventId")
+                        .IsUnique();
+
+                    b.ToTable("WebhookEvents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -518,6 +813,25 @@ namespace DiaspoChantier.Data.Migrations
                     b.Navigation("Utilisateur");
                 });
 
+            modelBuilder.Entity("DiaspoChantier.Models.InvitationProjet", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Entrepreneur", "Entrepreneur")
+                        .WithMany()
+                        .HasForeignKey("IdEntrepreneur")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiaspoChantier.Models.Projet", "Projet")
+                        .WithMany()
+                        .HasForeignKey("IdProjet")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Entrepreneur");
+
+                    b.Navigation("Projet");
+                });
+
             modelBuilder.Entity("DiaspoChantier.Models.Jalon", b =>
                 {
                     b.HasOne("DiaspoChantier.Models.Projet", "Projet")
@@ -525,6 +839,58 @@ namespace DiaspoChantier.Data.Migrations
                         .HasForeignKey("IdProjet")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Projet");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Paiement", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Entrepreneur", "Entrepreneur")
+                        .WithMany()
+                        .HasForeignKey("IdEntrepreneur")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DiaspoChantier.Models.Utilisateur", "Investisseur")
+                        .WithMany()
+                        .HasForeignKey("IdInvestisseur")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DiaspoChantier.Models.Projet", "Projet")
+                        .WithMany()
+                        .HasForeignKey("IdProjet")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DiaspoChantier.Models.Sequestre", "Sequestre")
+                        .WithMany()
+                        .HasForeignKey("IdSequestre")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Entrepreneur");
+
+                    b.Navigation("Investisseur");
+
+                    b.Navigation("Projet");
+
+                    b.Navigation("Sequestre");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Photo", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Jalon", "Jalon")
+                        .WithMany()
+                        .HasForeignKey("IdJalon")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DiaspoChantier.Models.Projet", "Projet")
+                        .WithMany()
+                        .HasForeignKey("IdProjet")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Jalon");
 
                     b.Navigation("Projet");
                 });
@@ -545,6 +911,25 @@ namespace DiaspoChantier.Data.Migrations
                     b.Navigation("Entrepreneur");
 
                     b.Navigation("Investisseur");
+                });
+
+            modelBuilder.Entity("DiaspoChantier.Models.Sequestre", b =>
+                {
+                    b.HasOne("DiaspoChantier.Models.Utilisateur", "Investisseur")
+                        .WithMany()
+                        .HasForeignKey("IdInvestisseur")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DiaspoChantier.Models.Projet", "Projet")
+                        .WithMany()
+                        .HasForeignKey("IdProjet")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Investisseur");
+
+                    b.Navigation("Projet");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

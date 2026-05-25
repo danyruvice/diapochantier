@@ -1,0 +1,80 @@
+@model DiaspoChantier.ViewModels.EntrepreneurProfilViewModel
+
+@{
+    ViewData["Title"] = $"Profil de {Model.NomComplet}";
+}
+
+<section class="section-panel">
+    <div class="mb-4">
+        <p class="eyebrow">Profil public</p>
+        <h1 class="section-title mb-1">@Model.NomComplet</h1>
+        <p class="section-copy mb-0">@Model.Specialite · @Model.Ville</p>
+    </div>
+
+    @if (TempData["MessageSucces"] is string messageSucces)
+    {
+        <div class="alert alert-success mb-3">@messageSucces</div>
+    }
+
+    <div class="dashboard-layout">
+        <div>
+            <div class="project-stats-grid">
+                <div>
+                    <p class="project-stat-label">Score de fiabilité</p>
+                    <strong>@Model.ScoreFilabilite.ToString("0.0") / 5</strong>
+                </div>
+                <div>
+                    <p class="project-stat-label">Projets terminés</p>
+                    <strong>@Model.NbProjetsTermines</strong>
+                </div>
+                <div>
+                    <p class="project-stat-label">MoMo</p>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.NumeroMoMo) ? "À renseigner" : Model.NumeroMoMo)</strong>
+                </div>
+                <div>
+                    <p class="project-stat-label">Localisation</p>
+                    <strong>@Model.Ville</strong>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="section-panel mt-3">
+                    <h2 class="form-section-title">Présentation</h2>
+                    <p class="section-copy mb-0">@Model.Description</p>
+                </div>
+            }
+        </div>
+
+        <div class="section-panel">
+            <h2 class="form-section-title">Envoyer une invitation</h2>
+            <p class="section-copy mb-3">Sélectionnez un projet existant pour proposer ce chantier à l’entrepreneur.</p>
+
+            @if (Model.Projets.Count == 0)
+            {
+                <div class="alert alert-success">Vous n’avez pas encore de projet à proposer. Créez votre premier chantier depuis le formulaire de projet.</div>
+            }
+            else
+            {
+                <form asp-action="Inviter" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="entrepreneurId" value="@Model.IdEntrepreneur" />
+                    <div class="form-group">
+                        <label class="form-label" for="projetId">Projet concerné</label>
+                        <select id="projetId" name="projetId" class="form-control">
+                            @foreach (var projet in Model.Projets)
+                            {
+                                <option value="@projet.IdProjet">@projet.Titre (@projet.Statut)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class="form-label" for="message">Message d’invitation</label>
+                        <textarea id="message" name="message" class="form-control" rows="4" placeholder="Expliquez le besoin, le budget et la date souhaitée.">@Model.Message</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-modern-primary mt-3">Envoyer l’invitation</button>
+                </form>
+            }
+        </div>
+    </div>
+</section>

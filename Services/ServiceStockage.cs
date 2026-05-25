@@ -24,7 +24,7 @@ namespace DiaspoChantier.Services
             }
         }
 
-        public async Task<ResultatTeleversement> EnregistrerAsync(IFormFile? fichier, string dossier)
+        public async Task<ResultatTeleversement> EnregistrerAsync(IFormFile? fichier, string dossier, string? hashAttendu = null)
         {
             if (fichier is null || fichier.Length == 0)
             {
@@ -36,6 +36,12 @@ namespace DiaspoChantier.Services
             await flux.CopyToAsync(memoire);
             var octets = memoire.ToArray();
             var hash = CalculerHashSHA256(octets);
+
+            if (!string.IsNullOrWhiteSpace(hashAttendu) && !string.Equals(hash, hashAttendu, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Le hash SHA-256 du fichier ne correspond pas à la capture reçue.");
+            }
+
             var nomFichier = $"{Guid.NewGuid():N}_{Path.GetFileName(fichier.FileName)}";
             var cheminStockage = $"{dossier.Trim('/')}/{nomFichier}";
 
